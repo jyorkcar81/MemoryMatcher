@@ -12,7 +12,7 @@ public class Card
         private int idOfImageButton;
         private int idOfPicture;
         private boolean showing;//Card is showing front if true (animal image), else back (solid color or other design).
-        private int idOfImageButt;
+        private boolean matched;
 
 
         public Card(int idOfImageButton, int idOfPicture, boolean showing)
@@ -20,7 +20,7 @@ public class Card
             this.idOfImageButton    = idOfImageButton;
             this.idOfPicture        = idOfPicture;
             this.showing            = showing ;
-
+            matched                 = false;
         }
 
         public void setShowing(boolean showing)
@@ -33,6 +33,8 @@ public class Card
             return showing;
         }
 
+        public void setMatched(boolean b){matched=b;}
+
         public int getIdOfImageButton()
         {
             return idOfImageButton;
@@ -43,5 +45,6 @@ public class Card
             return idOfPicture;
         }
 
+        public boolean isMatched(){return matched;}
 
 }

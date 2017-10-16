@@ -63,6 +63,11 @@ public class GameFragment extends Fragment implements View.OnClickListener{
     private int gridSize;//Number of cells in the grid.
 
 
+    private boolean matched;
+    private Card    firstCard,
+                    secondCard;
+
+
     private OnFragmentInteractionListener mListener;
 
     public GameFragment() {
@@ -225,7 +230,32 @@ public class GameFragment extends Fragment implements View.OnClickListener{
     {
         Toast.makeText(getActivity(),"card clicked!",Toast.LENGTH_SHORT).show();
 
-        ImageButton imageButton = (ImageButton)v.findViewById(v.getId());
+
+
+        ImageButton imageButton = (ImageButton)v;
+
+        for(int i=0;i<gridSize;i++)
+        {
+           if( ((Card)cards.get(i)).getIdOfImageButton() == imageButton.getId() )
+           {
+               firstCard = (Card)cards.get(i);
+               break;
+           }
+        }
+
+
+
+        //If clicked card is already matched, do nothing.  Return.
+        if(firstCard.isMatched()){return;}
+
+        //If same card is clicked twice, do nothing.  Return.
+        if(firstCard.getIdOfImageButton() == imageButton.getId()){return;}
+
+        //With two different cards selected, test for match.
+
+
+
+
 
         cards.get(0).setShowing(true);
 
