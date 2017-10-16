@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_2by2"
+
+            android:title="2x2" />
+        <item
+            android:id="@+id/nav_3by3"
+
+            android:title="3x3" />
+        <item
+            android:id="@+id/nav_4by4"
+
+            android:title="4x4" />
+        <item
+            android:id="@+id/nav_tutorial"
+
+            android:title="Tutorial" />
+
+        <item
+            android:id="@+id/nav_highscores"
+
+            android:title="High Scores" />
+
+        <item
+            android:id="@+id/nav_about"
+
+            android:title="About" />
+    </group>
+    <!-- android:icon="@drawable/ic_menu_camera" -->
+</menu>

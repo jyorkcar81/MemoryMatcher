@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">MemoryMatcher</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="developedBy">Developed By Jed York</string>
+    <string name="emailAddress">jyorkcar@sbcglobal.net</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+
+    <!-- Titles of fragments and activities -->
+    <string name="two_by_two_title">Match 2</string>
+    <string name="three_by_three_title">Match 3</string>
+    <string name="four_by_four_title">Match 2</string>
+    <string name="tutorial_title">Tutorial</string>
+    <string name="highscores_title">High Scores</string>
+    <string name="about_title">About</string>
+
+
+    <!-- Info for About -->
+    <string name="about_info">This app was created with Android Studio.</string>
+
+</resources>

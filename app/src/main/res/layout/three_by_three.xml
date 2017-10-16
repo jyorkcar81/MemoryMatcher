@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:alignmentMode="alignBounds"
+    android:background="@drawable/bg2"
+    android:columnCount="3"
+    android:rowCount="3"
+    android:useDefaultMargins="true">
+
+    <ImageButton
+        android:id="@+id/imageButton29"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:scaleType="fitXY"
+        app:srcCompat="@drawable/crabcrustaceanseaocean73769" />
+
+    <ImageButton
+        android:id="@+id/imageButton28"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:scaleType="fitXY"
+        app:srcCompat="@drawable/cowcattleanimalbull162258" />
+
+    <ImageButton
+        android:id="@+id/imageButton27"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:scaleType="fitXY"
+        app:srcCompat="@drawable/elephantafricaafricanelephantkenya70080" />
+
+    <ImageButton
+        android:id="@+id/imageButton26"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:scaleType="fitXY"
+        app:srcCompat="@drawable/giraffereticulatedgiraffeneckbeautiful158832" />
+
+    <ImageButton
+        android:id="@+id/imageButton25"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:scaleType="fitXY"
+        app:srcCompat="@drawable/eyefrog82107" />
+
+    <ImageButton
+        android:id="@+id/imageButton24"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:scaleType="fitXY"
+        app:srcCompat="@drawable/pexelsphoto146000" />
+
+    <ImageButton
+        android:id="@+id/imageButton23"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:scaleType="fitXY"
+        app:srcCompat="@drawable/leopardleopardspotsanimalwild39857" />
+
+    <ImageButton
+        android:id="@+id/imageButton22"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:scaleType="fitXY"
+        app:srcCompat="@drawable/kingpenguinpenguinsgroupofpenguinsbird53970" />
+
+    <ImageButton
+        android:id="@+id/imageButton21"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:scaleType="fitXY"
+        app:srcCompat="@drawable/pexelsphoto" />
+
+</GridLayout>
