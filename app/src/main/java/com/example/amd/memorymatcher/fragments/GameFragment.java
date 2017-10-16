@@ -234,6 +234,7 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
         ImageButton imageButton = (ImageButton)v;
 
+        //Determine which card this imageButton is for.
         for(int i=0;i<gridSize;i++)
         {
            if( ((Card)cards.get(i)).getIdOfImageButton() == imageButton.getId() )
