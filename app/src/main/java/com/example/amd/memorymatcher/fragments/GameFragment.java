@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.os.Handler;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -103,6 +104,9 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
         board = new Board(2,2);
         gridSize = board.getNumOfCards();
+        firstCard = null;
+        secondCard = null;
+
   //      drawableIds = getAllDrawableId();
     }
 
@@ -149,7 +153,7 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
         cardBack = getCardBackImage();
 
-        for(int i=0;i<gridSize;i++)
+        for(int i=0; i < gridSize ; i++)
         {
 
             if(i % 2 ==0)
@@ -228,38 +232,67 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
     public void onClick(View v)
     {
-        Toast.makeText(getActivity(),"card clicked!",Toast.LENGTH_SHORT).show();
-
-
+        msg("card clicked!");
 
         ImageButton imageButton = (ImageButton)v;
 
-        //Determine which card this imageButton is for.
-        for(int i=0;i<gridSize;i++)
+        if(firstCard == null)
         {
-           if( ((Card)cards.get(i)).getIdOfImageButton() == imageButton.getId() )
-           {
-               firstCard = (Card)cards.get(i);
-               break;
-           }
+            //Determine which card this imageButton is for.
+            for(int i=0;i<gridSize;i++)
+            {
+                if( ((Card)cards.get(i)).getIdOfImageButton() == imageButton.getId() )
+                {
+                    firstCard = (Card)cards.get(i);
+                    firstCard.setShowing(true);
+                    imageButton.setImageResource(firstCard.getIdOfPic());
+                    return;
+                }
+            }
+        }
+
+        //If same card is clicked twice, do nothing.  Return.
+        if(firstCard.getIdOfImageButton() == imageButton.getId()){msg("same");return;}
+/*
+        //If clicked card is already matched, do nothing.  Return.
+        if(firstCard.isMatched()){return;}
+
+
+
+        //With two different cards selected, test for match.
+
+*/
+
+
+
+        if(firstCard.getIdOfPic() == imageButton.getId())
+        {
+
+        }
+        else
+        {
+            long delay = 3L;
+                //secondCard = ;
+                //secondCard.flip()
+
+                        Handler handler = new Handler();
+                        handler.postDelayed(new Runnable(){
+
+                            public void run()
+                            {
+                                firstCard = null;
+                                secondCard = null;
+                            }
+                        },delay);
         }
 
 
 
-        //If clicked card is already matched, do nothing.  Return.
-        if(firstCard.isMatched()){return;}
-
-        //If same card is clicked twice, do nothing.  Return.
-        if(firstCard.getIdOfImageButton() == imageButton.getId()){return;}
-
-        //With two different cards selected, test for match.
 
 
 
 
-
-        cards.get(0).setShowing(true);
-
+/*
         for(int i=0;i<gridSize;i++)
         {
             if(cards.get(i).isShowing())
@@ -267,7 +300,7 @@ public class GameFragment extends Fragment implements View.OnClickListener{
                 ((ImageButton)grid.getChildAt(i)).setImageResource(cards.get(i).getIdOfPic());
             }
         }
-
+*/
     }
 
 
@@ -439,5 +472,6 @@ public class GameFragment extends Fragment implements View.OnClickListener{
     }
 
     private void playSound(){}
+    private void msg(String m){Toast.makeText(getActivity(),m,Toast.LENGTH_SHORT).show();}
 
 }
