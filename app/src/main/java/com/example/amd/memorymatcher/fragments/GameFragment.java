@@ -135,7 +135,6 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
         int idOfImageButton;
         int idOfPic;
-        boolean showing = false;
         ImageButton button;
 
         View v = inflater.inflate(R.layout.fragment_game, container, false);
@@ -194,7 +193,7 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
         cardBack = getCardBackImage();
 
-        for(int i=0; i < gridSize ; i++)
+        for(int i=0; i < gridSize ; i+=2)
         {
 
             if(i % 2 ==0)
@@ -208,7 +207,13 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
             button = (ImageButton)grid.getChildAt(i);
 
-            board.addCard(new Card( button.getId(),idOfPic,showing));
+            board.addCard(new Card(button.getId(),idOfPic,false));
+
+            button.setImageResource(cardBack);
+
+            button = (ImageButton)grid.getChildAt(i+1);
+
+            board.addCard(new Card(button.getId(),idOfPic,false));
 
             button.setImageResource(cardBack);
 
