@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.drawable.Drawable;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -30,6 +31,7 @@ import com.example.amd.memorymatcher.other.Card;
 import java.util.ArrayList;
 import java.util.Random;
 import java.lang.reflect.Field;
+import android.view.ViewGroup.LayoutParams;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -56,7 +58,7 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
     private Board board;
     private ArrayList<Card> cards;
-    private int cardBack;
+    private int cardBack,boardSize;
     private GridLayout grid;
 
     private int[] drawableIds;
@@ -68,6 +70,8 @@ public class GameFragment extends Fragment implements View.OnClickListener{
     private Card    firstCard,
                     secondCard;
     private boolean threadBusy;
+
+
 
 
     private OnFragmentInteractionListener mListener;
@@ -100,10 +104,12 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
+            boardSize = getArguments().getInt("boardSize");
         }
 
+        msg("boardSize:"+boardSize);
 
-        board = new Board(2,2);
+        board = new Board(boardSize,boardSize);
         gridSize = board.getNumOfCards();
         firstCard = null;
         secondCard = null;
@@ -134,6 +140,39 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
         View v = inflater.inflate(R.layout.fragment_game, container, false);
         grid = (GridLayout)v.findViewById(R.id.twoByTwoGridLayout);
+
+        //Dynamically create a grid based upon boardSize*boardSize  e.g.  2x2, 4x4... always square
+        grid.setColumnCount(boardSize);
+        grid.setRowCount(boardSize);
+
+        ImageButton temp;
+
+        if(isAdded())//Fragment must be attached for getApplication to not be null.
+        {
+            msg("frag-context:"+getActivity());
+
+                for(int i=0; i < (boardSize*boardSize); i++)
+                {
+                    Context context = inflater.getContext();
+                    temp = new ImageButton(context);
+                    temp.setScaleType(ImageView.ScaleType.FIT_XY);
+                    temp.setLayoutParams(new ViewGroup.LayoutParams(100,100) );
+                    grid.addView(temp);
+                }
+        }
+        else
+        {
+            //
+        }
+
+
+
+
+        v.invalidate();
+
+
+
+
         initListeners();
 
         grid.setBackgroundResource(getBackground());//Assign a random background.
@@ -151,7 +190,7 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 */
 
 
-
+        //Initialize the Card list.
 
         cardBack = getCardBackImage();
 
@@ -195,6 +234,9 @@ public class GameFragment extends Fragment implements View.OnClickListener{
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+
+
+
         if (context instanceof OnFragmentInteractionListener) {
             mListener = (OnFragmentInteractionListener) context;
         } else {
@@ -277,16 +319,11 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         if(firstCard.getIdOfImageButton() == secondCard.getIdOfImageButton()){msg("same");secondCard=null;return;}
 
         //If clicked card is already matched, do nothing.  Return.
-        if(firstCard.isMatched()){return;}
+        if(firstCard.isMatched()){msg("true.  isMatched.");return;}
 
-/*
+
 
         //With two different cards selected, test for match.
-
-*/
-
-
-
         if(firstCard.getIdOfPic() == secondCard.getIdOfPic())
         {
             msg("match-made");
@@ -295,10 +332,7 @@ public class GameFragment extends Fragment implements View.OnClickListener{
             grid.findViewById(firstCard.getIdOfImageButton()).setEnabled(false);
             grid.findViewById(secondCard.getIdOfImageButton()).setEnabled(false);
 
-            //firstCard = (Card)cards.get(i);
             firstCard.setShowing(false);
-
-            // secondCard = (Card)cards.get(i);
             secondCard.setShowing(false);
 
             firstCard.setMatched(true);
@@ -307,28 +341,12 @@ public class GameFragment extends Fragment implements View.OnClickListener{
             firstCard = null;
             secondCard = null;
         }
-        else  //No match is made, so reset the cards.  Flip.  Show cardBack.
+        else  //No match is made, so reset the cards.  Flip.  Show cardBack after short delay.
         {
             long delay = 1000L;
 
             firstCard.setShowing(false);
             secondCard.setShowing(false);
-
-            //Turn card over.  Show backside of cards.
-
-            /*         for(int i=0;i<gridSize;i++) {
-                imageButton = (ImageButton) grid.getChildAt(i);
-
-                if (firstCard.getIdOfImageButton() == imageButton.getId()) {
-                    //firstCard = (Card)cards.get(i);
-                    firstCard.setShowing(false);
-                    imageButton.setImageResource(cardBack);
-                } else if (secondCard.getIdOfImageButton() == imageButton.getId()) {
-                    //secondCard = (Card)cards.get(i);
-                    secondCard.setShowing(false);
-                    imageButton.setImageResource(cardBack);
-                }
-            }*/
 
             threadBusy = true;
 
@@ -350,21 +368,7 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
 
 
-
-
-
-             //   imageButton.setImageResource(firstCard.getIdOfPic());
-
-                //secondCard = ;
-                //secondCard.flip()
-
-
         }
-
-
-
-
-
 
 
 /*

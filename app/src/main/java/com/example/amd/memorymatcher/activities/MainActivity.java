@@ -37,6 +37,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private static int nextFragment;
 
+    private int boardSize;//2x2, 4x4, 3x3...
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -104,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (id == R.id.nav_2by2)
         {
             title = getString(R.string.two_by_two_title);
-
+            boardSize=2;
             nextFragment = GAME_FRAGMENT;
 
             msg("2by2");
@@ -112,10 +114,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         else if (id == R.id.nav_3by3)
         {
             title = getString(R.string.three_by_three_title);
+            boardSize=3;
+            nextFragment = GAME_FRAGMENT;
+
+            msg("3by3");
         }
         else if (id == R.id.nav_4by4)
         {
             title = getString(R.string.four_by_four_title);
+            boardSize=4;
+            nextFragment = GAME_FRAGMENT;
+
+            msg("4by4");
         }
         else if (id == R.id.nav_tutorial)
         {
@@ -163,7 +173,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch (nextFragment)
         {
             case GAME_FRAGMENT:
-                return new GameFragment();
+
+                Bundle bundle = new Bundle();
+                bundle.putInt("boardSize", boardSize);
+
+                GameFragment gf = new GameFragment();
+                gf.setArguments(bundle);
+
+                return gf;
 
             case ABOUT_FRAGMENT:
                 return new AboutFragment();
