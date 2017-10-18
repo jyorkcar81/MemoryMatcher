@@ -67,6 +67,7 @@ public class GameFragment extends Fragment implements View.OnClickListener{
     private boolean matched;
     private Card    firstCard,
                     secondCard;
+    private boolean threadBusy;
 
 
     private OnFragmentInteractionListener mListener;
@@ -106,6 +107,7 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         gridSize = board.getNumOfCards();
         firstCard = null;
         secondCard = null;
+        threadBusy = false;
 
   //      drawableIds = getAllDrawableId();
     }
@@ -232,7 +234,8 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
     public void onClick(View v)
     {
-        msg("card clicked!");
+
+        if(threadBusy){return;}
 
         ImageButton imageButton = (ImageButton)v;
 
@@ -251,13 +254,32 @@ public class GameFragment extends Fragment implements View.OnClickListener{
             }
         }
 
+
+
+        if(secondCard == null)
+        {
+            //Determine which card this imageButton is for.
+            for(int i=0;i<gridSize;i++)
+            {
+                if( ((Card)cards.get(i)).getIdOfImageButton() == imageButton.getId() )
+                {
+                    secondCard = (Card)cards.get(i);
+                    secondCard.setShowing(true);
+                    imageButton.setImageResource(secondCard.getIdOfPic());
+                    break;
+                }
+            }
+        }
+
+
+
         //If same card is clicked twice, do nothing.  Return.
-        if(firstCard.getIdOfImageButton() == imageButton.getId()){msg("same");return;}
-/*
+        if(firstCard.getIdOfImageButton() == secondCard.getIdOfImageButton()){msg("same");secondCard=null;return;}
+
         //If clicked card is already matched, do nothing.  Return.
         if(firstCard.isMatched()){return;}
 
-
+/*
 
         //With two different cards selected, test for match.
 
@@ -265,25 +287,78 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
 
 
-        if(firstCard.getIdOfPic() == imageButton.getId())
+        if(firstCard.getIdOfPic() == secondCard.getIdOfPic())
         {
+            msg("match-made");
 
+            //Since a match is made, disable the corresponding buttons in the GridLayout.
+            grid.findViewById(firstCard.getIdOfImageButton()).setEnabled(false);
+            grid.findViewById(secondCard.getIdOfImageButton()).setEnabled(false);
+
+            //firstCard = (Card)cards.get(i);
+            firstCard.setShowing(false);
+
+            // secondCard = (Card)cards.get(i);
+            secondCard.setShowing(false);
+
+            firstCard.setMatched(true);
+            secondCard.setMatched(true);
+
+            firstCard = null;
+            secondCard = null;
         }
-        else
+        else  //No match is made, so reset the cards.  Flip.  Show cardBack.
         {
-            long delay = 3L;
+            long delay = 1000L;
+
+            firstCard.setShowing(false);
+            secondCard.setShowing(false);
+
+            //Turn card over.  Show backside of cards.
+
+            /*         for(int i=0;i<gridSize;i++) {
+                imageButton = (ImageButton) grid.getChildAt(i);
+
+                if (firstCard.getIdOfImageButton() == imageButton.getId()) {
+                    //firstCard = (Card)cards.get(i);
+                    firstCard.setShowing(false);
+                    imageButton.setImageResource(cardBack);
+                } else if (secondCard.getIdOfImageButton() == imageButton.getId()) {
+                    //secondCard = (Card)cards.get(i);
+                    secondCard.setShowing(false);
+                    imageButton.setImageResource(cardBack);
+                }
+            }*/
+
+            threadBusy = true;
+
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable(){
+
+                    public void run()
+                    {
+                        //Turn card over.  Show backside of cards.
+                        ((ImageButton)grid.findViewById(firstCard.getIdOfImageButton())).setImageResource(cardBack);
+                        ((ImageButton)grid.findViewById(secondCard.getIdOfImageButton())).setImageResource(cardBack);
+
+                        firstCard   = null;
+                        secondCard  = null;
+
+                        threadBusy = false;
+                    }
+             },delay);
+
+
+
+
+
+
+             //   imageButton.setImageResource(firstCard.getIdOfPic());
+
                 //secondCard = ;
                 //secondCard.flip()
 
-                        Handler handler = new Handler();
-                        handler.postDelayed(new Runnable(){
 
-                            public void run()
-                            {
-                                firstCard = null;
-                                secondCard = null;
-                            }
-                        },delay);
         }
 
 
