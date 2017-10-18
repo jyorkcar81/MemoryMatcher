@@ -58,21 +58,25 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
     private Board board;
     private ArrayList<Card> cards;
-    private int cardBack,boardSize;
+
+    private int cardBack,
+                boardSize;
+
     private GridLayout grid;
 
     private int[] drawableIds;
 
-    private int gridSize;//Number of cells in the grid.
+    private int gridSize,//Number of cells in the grid.
+                boardRows,//Number of rows in the boardgame.
+                boardColumns;//Number of columns in the boardgame.
 
 
     private boolean matched;
+
     private Card    firstCard,
                     secondCard;
+
     private boolean threadBusy;
-
-
-
 
     private OnFragmentInteractionListener mListener;
 
@@ -104,18 +108,21 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
-            boardSize = getArguments().getInt("boardSize");
+            boardRows = getArguments().getInt("boardRows");
+            boardColumns = getArguments().getInt("boardColumns");
+
         }
 
-        msg("boardSize:"+boardSize);
+        msg("board dimensions: "+boardRows+"x"+boardColumns);
 
-        board = new Board(boardSize,boardSize);
+        board = new Board(boardRows,boardColumns);
+        boardSize = board.getNumOfCards();
         gridSize = board.getNumOfCards();
-        firstCard = null;
-        secondCard = null;
+        firstCard   = null;
+        secondCard  = null;
         threadBusy = false;
 
-  //      drawableIds = getAllDrawableId();
+      drawableIds = getAllDrawableId();
     }
 
     /*
@@ -132,7 +139,6 @@ public class GameFragment extends Fragment implements View.OnClickListener{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-
         int idOfImageButton;
         int idOfPic;
         ImageButton button;
@@ -141,21 +147,21 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         grid = (GridLayout)v.findViewById(R.id.twoByTwoGridLayout);
 
         //Dynamically create a grid based upon boardSize*boardSize  e.g.  2x2, 4x4... always square
-        grid.setColumnCount(boardSize);
-        grid.setRowCount(boardSize);
+        grid.setColumnCount(boardColumns);
+        grid.setRowCount(boardRows);
 
         ImageButton temp;
 
         if(isAdded())//Fragment must be attached for getApplication to not be null.
         {
-            msg("frag-context:"+getActivity());
+            msg("board size:"+board.getNumOfCards());
 
-                for(int i=0; i < (boardSize*boardSize); i++)
+                for(int i=0; i < board.getNumOfCards(); i++)
                 {
                     Context context = inflater.getContext();
                     temp = new ImageButton(context);
                     temp.setScaleType(ImageView.ScaleType.FIT_XY);
-                    temp.setLayoutParams(new ViewGroup.LayoutParams(100,100) );
+                    temp.setLayoutParams(new ViewGroup.LayoutParams(200,200) );
                     grid.addView(temp);
                 }
         }
@@ -164,13 +170,7 @@ public class GameFragment extends Fragment implements View.OnClickListener{
             //
         }
 
-
-
-
         v.invalidate();
-
-
-
 
         initListeners();
 
@@ -188,14 +188,12 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         board.addCard(new  Card(2,idOfPic,showing));
 */
 
-
         //Initialize the Card list.
 
         cardBack = getCardBackImage();
 
         for(int i=0; i < gridSize ; i+=2)
         {
-
             if(i % 2 ==0)
             {
                 idOfPic = R.drawable.beehoneybeeapisinsect144252;
@@ -391,6 +389,13 @@ public class GameFragment extends Fragment implements View.OnClickListener{
     public int[] getAllDrawableId()
     {
         Field[] ids = com.example.amd.memorymatcher.R.drawable.class.getDeclaredFields();
+
+        //Log all the names of fields gathered.
+        for(int i=0;i<ids.length;i++)
+        {
+            Log.d("field_name:", ids[i].getName());
+        }
+
         int[] resArray = new int[ids.length];
 
 

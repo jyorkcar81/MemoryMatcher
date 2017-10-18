@@ -44,4 +44,9 @@ public class Board
     {
         return numOfCards;
     }
+
+    public int getRows(){return rows;}
+
+    public int getColumns(){return cols;}
+
 }
