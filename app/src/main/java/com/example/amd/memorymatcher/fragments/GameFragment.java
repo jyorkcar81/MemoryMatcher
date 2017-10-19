@@ -122,7 +122,7 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         secondCard  = null;
         threadBusy = false;
 
-      drawableIds = getAllDrawableId();
+    //  drawableIds = getAllDrawableId();
     }
 
     /*
@@ -136,13 +136,13 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 */
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         int idOfImageButton;
         int idOfPic;
         ImageButton button;
 
+        // Inflate the layout for this fragment.  i.e. get xml to dynamically add buttons to build the ui
         View v = inflater.inflate(R.layout.fragment_game, container, false);
         grid = (GridLayout)v.findViewById(R.id.twoByTwoGridLayout);
 
@@ -152,16 +152,23 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
         ImageButton temp;
 
+
+        //use a waiting thread until this is true.
+
+
+
         if(isAdded())//Fragment must be attached for getApplication to not be null.
         {
             msg("board size:"+board.getNumOfCards());
 
-                for(int i=0; i < board.getNumOfCards(); i++)
+                for(int i=0; i < gridSize; i++)
                 {
                     Context context = inflater.getContext();
                     temp = new ImageButton(context);
                     temp.setScaleType(ImageView.ScaleType.FIT_XY);
-                    temp.setLayoutParams(new ViewGroup.LayoutParams(200,200) );
+                    temp.setLayoutParams(new ViewGroup.LayoutParams(100,100));
+                    temp.setId(View.generateViewId());
+
                     grid.addView(temp);
                 }
         }
@@ -192,16 +199,10 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
         cardBack = getCardBackImage();
 
-        for(int i=0; i < gridSize ; i+=2)
+        for(int i=0; i < gridSize ; i++)
         {
-            if(i % 2 ==0)
-            {
-                idOfPic = R.drawable.beehoneybeeapisinsect144252;
-            }
-            else
-            {
-                idOfPic = R.drawable.cowcattleanimalbull162258;
-            }
+
+            idOfPic = R.drawable.beehoneybeeapisinsect144252;
 
             button = (ImageButton)grid.getChildAt(i);
 
@@ -209,7 +210,11 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
             button.setImageResource(cardBack);
 
-            button = (ImageButton)grid.getChildAt(i+1);
+            i++;
+
+            button = (ImageButton)grid.getChildAt(i);
+
+            idOfPic = R.drawable.cowcattleanimalbull162258;
 
             board.addCard(new Card(button.getId(),idOfPic,false));
 
@@ -222,9 +227,18 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         cards = board.getCards();
 
 
+        //Show list of cards in log for debugging.
+ /*       for(int i=0;i<gridSize;i++)
+        {
+            Card c = cards.get(i);
+            String s = "id_button="+c.getIdOfImageButton()+" id_pic="+c.getIdOfPic();
+            Log.d("card",s);
+        }*/
 
-        // Inflate the layout for this fragment
-        return v;//inflater.inflate(R.layout.fragment_game, container, false);
+
+
+
+        return v;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
