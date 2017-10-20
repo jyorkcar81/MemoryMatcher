@@ -7,6 +7,9 @@ import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.Toast;
+import android.widget.VideoView;
 
 import com.example.amd.memorymatcher.R;
 
@@ -18,7 +21,7 @@ import com.example.amd.memorymatcher.R;
  * Use the {@link TutorialFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class TutorialFragment extends Fragment {
+public class TutorialFragment extends Fragment implements View.OnClickListener{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -27,6 +30,9 @@ public class TutorialFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    private Button button;
+    private VideoView video;
 
     private OnFragmentInteractionListener mListener;
 
@@ -64,8 +70,14 @@ public class TutorialFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_tutorial, container, false);
+        View v = inflater.inflate(R.layout.fragment_tutorial, container, false);
+        button = (Button)v.findViewById(R.id.buttonWatchVideo);
+        video = (VideoView)v.findViewById(R.id.videoView);
+        video.setVideoPath("");
+        button.setOnClickListener(this);
+        return v;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -105,5 +117,16 @@ public class TutorialFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    //Button listener.
+    public void onClick(View v)
+    {
+        Toast.makeText(v.getContext(),"watch video...",Toast.LENGTH_SHORT).show();
+        //play the video.
+        if(v.getId() == button.getId())
+        {
+            video.start();
+        }
     }
 }

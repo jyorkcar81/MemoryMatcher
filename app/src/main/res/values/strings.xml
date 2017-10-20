@@ -24,4 +24,21 @@
     <!-- Info for About -->
     <string name="about_info">This app was created with Android Studio.</string>
 
+
+    <!-- stat panel at the bottom of the board -->
+    <string name="match_count">Match Count:</string>
+    <string name="score">Score:</string>
+    <string name="timer">Time:</string>
+
+
+    <!-- various button labels -->
+    <string name="restart_button">Restart</string>
+    <string name="watch_button">Watch</string>
+
+    <!-- High Score Column Headers -->
+    <string name="rank_header">Rank</string>
+    <string name="name_header">Name</string>
+    <string name="score_header">Score</string>
+
+
 </resources>

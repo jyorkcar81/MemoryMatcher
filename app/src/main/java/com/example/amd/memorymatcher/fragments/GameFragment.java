@@ -22,6 +22,7 @@ import android.view.ViewGroup;
 import android.widget.GridLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.amd.memorymatcher.R;
@@ -57,6 +58,10 @@ public class GameFragment extends Fragment implements View.OnClickListener{
     private static final int NUMBER_OF_CARD_BACKS   = 5;
     private static final int NUMBER_OF_BACKGROUNDS  = 9;
 
+    private static final int MATCH_TYPE_2 = 2;
+    private static final int MATCH_TYPE_3 = 3;
+
+    private int matchType;
 
     private Board board;
     private ArrayList<Card> cards;
@@ -78,7 +83,23 @@ public class GameFragment extends Fragment implements View.OnClickListener{
     private Card    firstCard,
                     secondCard;
 
+
+    private int totalMatchesAvailable,
+                gameType; //Match 2 or Match 3 at a time.
+
+
+    private Handler timerHandler;
+
+    private int score,
+                matchCount;//Total matches made.
+
+    private long time;
+
     private boolean threadBusy;
+
+    private TextView    tvScore,
+                        tvTime,
+                        tvMatchCount;
 
     private OnFragmentInteractionListener mListener;
 
@@ -117,12 +138,22 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
         msg("board dimensions: "+boardRows+"x"+boardColumns);
 
-        board = new Board(boardRows,boardColumns);
+        matchType = MATCH_TYPE_2;
+
+        board = new Board(boardRows,boardColumns,matchType);
         boardSize = board.getNumOfCards();
         gridSize = board.getNumOfCards();
         firstCard   = null;
         secondCard  = null;
         threadBusy = false;
+
+        score = 0;
+        matchCount = 0;
+
+        totalMatchesAvailable = board.getTotalMatches();
+
+        timerHandler = new Handler();
+
 
         drawableIds = getAllDrawableId();
     }
@@ -143,16 +174,23 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         int idOfImageButton;
         int idOfPic;
         ImageButton button;
+        ImageButton temp;
 
         // Inflate the layout for this fragment.  i.e. get xml to dynamically add buttons to build the ui
         View v = inflater.inflate(R.layout.fragment_game, container, false);
         grid = (GridLayout)v.findViewById(R.id.twoByTwoGridLayout);
 
+        tvScore         = (TextView)v.findViewById(R.id.textViewScore);
+        tvTime          = (TextView)v.findViewById(R.id.textViewTime);
+        tvMatchCount    = (TextView)v.findViewById(R.id.textViewMatchCount);
+
+        updateStats();
+
         //Dynamically create a grid based upon boardSize*boardSize  e.g.  2x2, 4x4... always square
         grid.setColumnCount(boardColumns);
         grid.setRowCount(boardRows);
 
-        ImageButton temp;
+
 
 
         //use a waiting thread until this is true.
@@ -164,13 +202,13 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
             msg("board size:"+board.getNumOfCards());
 
-  /*
-        Cards ---> Grid cells
-        1,2,3,4 --- >  1,2,3,4
-        shuffle cards
-        4,2,1,3 ----> 1,2,3,4
+              /*
+                    Cards ---> Grid cells
+                    1,2,3,4 --- >  1,2,3,4
+                    shuffle cards
+                    4,2,1,3 ----> 1,2,3,4
 
-  */
+              */
 
                 for(int i=0; i < gridSize; i++)
                 {
@@ -189,12 +227,12 @@ public class GameFragment extends Fragment implements View.OnClickListener{
             //
         }
 
-        v.invalidate();
+
 
         initListeners();
 
 
-        grid.setBackgroundResource(getBackground());//Assign a random background.
+        v.setBackgroundResource(getBackground());//Assign a random background.
 
         //Initialize the Card list.
 
@@ -206,19 +244,11 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         {
             idOfPic = chooseImage();
 
-           // button = (ImageButton)grid.getChildAt(i);
-
             tempList.add(new Card(idOfPic));
-
-            //button.setImageResource(idOfPic);//cardBack
 
             i++;
 
-            //button = (ImageButton)grid.getChildAt(i);
-
             tempList.add(new Card(idOfPic));
-
-            //button.setImageResource(idOfPic);//cardBack
         }
 
         java.util.Collections.shuffle(tempList);
@@ -228,8 +258,6 @@ public class GameFragment extends Fragment implements View.OnClickListener{
             button = (ImageButton)grid.getChildAt(i);
 
             idOfImageButton = button.getId();
-
-            //idOfPic = tempList.get(i).getIdOfPic();
 
             button.setImageResource(cardBack);
 
@@ -342,6 +370,13 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
     //************************************************************
 
+    private void updateStats()
+    {
+        tvMatchCount.setText(""+matchCount);
+        tvScore.setText(""+score);
+        tvTime.setText(""+time);
+    }
+
     //Choose an image to put in the grid.
     private int chooseImage()
     {
@@ -388,9 +423,6 @@ public class GameFragment extends Fragment implements View.OnClickListener{
             }
         }
 
-
-
-
         if(secondCard == null)
         {
             //Determine which card this imageButton is for.
@@ -419,6 +451,9 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         //With two different cards selected, test for match.
         if(firstCard.getIdOfPic() == secondCard.getIdOfPic())
         {
+            matchCount++;
+            score += 100;
+
             msg("match-made");
 
             //Since a match is made, disable the corresponding buttons in the GridLayout.
@@ -463,6 +498,31 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
         }
 
+        updateStats();
+
+        if(isGameOver())
+        {
+            msg("Game Over!");
+
+            //Check if new high score is reached.  If so, add to new entry to DB, else do nothing.
+        }
+
+    }
+
+    private boolean isGameOver()
+    {
+        boolean gameOver = false;
+
+        if(matchCount == totalMatchesAvailable)
+        {
+            gameOver = true;
+        }
+        else
+        {
+            gameOver = false;
+        }
+
+        return gameOver;
     }
 
 
@@ -604,7 +664,7 @@ public class GameFragment extends Fragment implements View.OnClickListener{
     }
 
     private void initGame(){}
-    private void isGameOver(){}
+
 
     //If both cards are assigned the same R.drawable.imageblahblahblah then they are considered the same.  i.e.  a match has been made.
     private boolean isMatch(Card c1, Card c2)
