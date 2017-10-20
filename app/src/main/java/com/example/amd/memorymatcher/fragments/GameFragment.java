@@ -29,6 +29,8 @@ import com.example.amd.memorymatcher.other.Board;
 import com.example.amd.memorymatcher.other.Card;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Random;
 import java.lang.reflect.Field;
 import android.view.ViewGroup.LayoutParams;
@@ -64,7 +66,7 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
     private GridLayout grid;
 
-    private int[] drawableIds;
+    private ArrayList drawableIds;
 
     private int gridSize,//Number of cells in the grid.
                 boardRows,//Number of rows in the boardgame.
@@ -122,7 +124,7 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         secondCard  = null;
         threadBusy = false;
 
-    //  drawableIds = getAllDrawableId();
+        drawableIds = getAllDrawableId();
     }
 
     /*
@@ -159,7 +161,16 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
         if(isAdded())//Fragment must be attached for getApplication to not be null.
         {
+
             msg("board size:"+board.getNumOfCards());
+
+  /*
+        Cards ---> Grid cells
+        1,2,3,4 --- >  1,2,3,4
+        shuffle cards
+        4,2,1,3 ----> 1,2,3,4
+
+  */
 
                 for(int i=0; i < gridSize; i++)
                 {
@@ -171,6 +182,7 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
                     grid.addView(temp);
                 }
+
         }
         else
         {
@@ -181,62 +193,101 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
         initListeners();
 
+
         grid.setBackgroundResource(getBackground());//Assign a random background.
-
-/*
-        idOfPic = R.drawable.beehoneybeeapisinsect144252;
-
-        board.addCard(new  Card(1,idOfPic,showing));
-        board.addCard(new  Card(1,idOfPic,showing));
-
-        idOfPic = R.drawable.cowcattleanimalbull162258;
-
-        board.addCard(new  Card(2,idOfPic,showing));
-        board.addCard(new  Card(2,idOfPic,showing));
-*/
 
         //Initialize the Card list.
 
         cardBack = getCardBackImage();
 
+        ArrayList<Card> tempList = new ArrayList<Card>();
+//for multiple of 2 boards:
         for(int i=0; i < gridSize ; i++)
         {
+            idOfPic = chooseImage();
 
-            idOfPic = R.drawable.beehoneybeeapisinsect144252;
+           // button = (ImageButton)grid.getChildAt(i);
 
-            button = (ImageButton)grid.getChildAt(i);
+            tempList.add(new Card(idOfPic));
 
-            board.addCard(new Card(button.getId(),idOfPic,false));
-
-            button.setImageResource(cardBack);
+            //button.setImageResource(idOfPic);//cardBack
 
             i++;
 
+            //button = (ImageButton)grid.getChildAt(i);
+
+            tempList.add(new Card(idOfPic));
+
+            //button.setImageResource(idOfPic);//cardBack
+        }
+
+        java.util.Collections.shuffle(tempList);
+
+        for(int i=0;i<gridSize;i++)
+        {
             button = (ImageButton)grid.getChildAt(i);
 
-            idOfPic = R.drawable.cowcattleanimalbull162258;
+            idOfImageButton = button.getId();
 
-            board.addCard(new Card(button.getId(),idOfPic,false));
+            //idOfPic = tempList.get(i).getIdOfPic();
 
             button.setImageResource(cardBack);
 
+            tempList.get(i).setIdOfImageButton(idOfImageButton);
         }
 
-        board.shuffle();
 
-        cards = board.getCards();
 
 
         //Show list of cards in log for debugging.
- /*       for(int i=0;i<gridSize;i++)
+        for(int i=0;i<tempList.size();i++)
         {
-            Card c = cards.get(i);
+            Card c = tempList.get(i);
             String s = "id_button="+c.getIdOfImageButton()+" id_pic="+c.getIdOfPic();
-            Log.d("card",s);
+            Log.d("temp cards====",s);
+        }
+
+
+        cards = tempList;
+        Log.d("address",""+cards);
+        board.setCards(cards);
+        Log.d("address2",""+board.getCards());
+
+
+
+
+
+        //cards = board.getCards();
+        //board.shuffle();
+
+
+        //show the cards in the log to see their order
+ /*       for(int i=0;i<cards.size();i++)
+        {
+            Log.d("getIdOfPic:",""+cards.get(i).getIdOfPic());
         }*/
 
 
 
+/*
+        ArrayList<Card> test = new ArrayList<Card>();
+
+        test.add(new Card(1,R.drawable.beehoneybeeapisinsect144252,false));
+        test.add(new Card(2,R.drawable.beehoneybeeapisinsect144252,false));
+        test.add(new Card(3,R.drawable.beehoneybeeapisinsect144252,false));
+        test.add(new Card(4,R.drawable.beehoneybeeapisinsect144252,false));
+
+        java.util.Collections.shuffle(test);
+
+        cards=test;
+
+        //Show list of cards in log for debugging.
+        for(int i=0;i<test.size();i++)
+        {
+
+
+            Log.d("card",test.get(i).getIdOfImageButton()+"");
+        }*/
 
         return v;
     }
@@ -291,6 +342,30 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
     //************************************************************
 
+    //Choose an image to put in the grid.
+    private int chooseImage()
+    {
+        int id,
+            index;
+
+        index = new Random().nextInt(drawableIds.size());// 0-to-(size-1)
+
+        try
+        {
+            //If picture already exists, then remove it from the list of pictures available.  This prevents duplicate assignments.
+            id = Integer.parseInt(drawableIds.get(index).toString());
+        }
+        catch(Exception e)
+        {
+            id = -9999;//Should be unreachable statement because all IDs stored are ints wrapped in a String... should be no exceptions occurring.
+            Log.d("Exception chooseImage",e.toString());
+        }
+
+        drawableIds.remove(index);
+
+        return id;
+    }
+
     public void onClick(View v)
     {
 
@@ -312,6 +387,7 @@ public class GameFragment extends Fragment implements View.OnClickListener{
                 }
             }
         }
+
 
 
 
@@ -387,35 +463,17 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
         }
 
-
-/*
-        for(int i=0;i<gridSize;i++)
-        {
-            if(cards.get(i).isShowing())
-            {
-                ((ImageButton)grid.getChildAt(i)).setImageResource(cards.get(i).getIdOfPic());
-            }
-        }
-*/
     }
 
 
-    public int[] getAllDrawableId()
+    public ArrayList getAllDrawableId()
     {
         Field[] ids = com.example.amd.memorymatcher.R.drawable.class.getDeclaredFields();
 
-        //Log all the names of fields gathered.
-        for(int i=0;i<ids.length;i++)
-        {
-            Log.d("field_name:", ids[i].getName());
-        }
-
-        int[] resArray = new int[ids.length];
-
-
-        ArrayList<Integer> list = new ArrayList<Integer>();
+        ArrayList list = new ArrayList();
 
         int tempId;
+        String tempName;
 
         Log.d("fields_length",ids.length+"");
 
@@ -424,32 +482,22 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
             try
             {
+                tempName = ids[i].getName();
+
                 tempId = ids[i].getInt(new R.drawable());
 
                 //Exclude launcher icons, backgrounds, and *.xml files.
                 if(
-                           tempId == R.drawable.bg1
-                        || tempId == R.drawable.bg2
-                        || tempId == R.drawable.bg3
-                        || tempId == R.drawable.bg4
-                        || tempId == R.drawable.bg5
-                        || tempId == R.drawable.bg6
-                        || tempId == R.drawable.bg7
-                        || tempId == R.drawable.bg8
-                        || tempId == R.drawable.bg9
-                        || tempId == R.drawable.ic_menu_camera
-                        || tempId == R.drawable.ic_menu_gallery
-                        || tempId == R.drawable.ic_menu_manage
-                        || tempId == R.drawable.ic_menu_send
-                        || tempId == R.drawable.ic_menu_share
-                        || tempId == R.drawable.ic_menu_slideshow
-                        || tempId == R.drawable.side_nav_bar
-                        || tempId == R.drawable.cardback
-                        || tempId == R.drawable.cardback2
-                        || tempId == R.drawable.cardback3
-                        || tempId == R.drawable.cardback4
-                        || tempId == R.drawable.cardback5
-
+                        tempName.startsWith("bg")
+                        ||tempName.startsWith("ic_")
+                        ||tempName.startsWith("cardback")
+                        ||tempName.startsWith("abc_")
+                        ||tempName.startsWith("avd_")
+                        ||tempName.startsWith("design_")
+                        ||tempName.startsWith("notification_")
+                        ||tempName.startsWith("navigation_")
+                        ||tempName.startsWith("notify_")
+                        ||tempName.startsWith("side_")
                         )
                 {
                     //Do not add these.
@@ -457,6 +505,7 @@ public class GameFragment extends Fragment implements View.OnClickListener{
                 else
                 {
                     list.add(tempId);
+                    Log.d("field_name",tempName);
                 }
 
 
@@ -465,21 +514,10 @@ public class GameFragment extends Fragment implements View.OnClickListener{
             {
 
             }
-
+            Log.d("list_length",list.size()+"");
         }
 
-
-        int cleansed[] = new int[list.size()];
-        //Convert list to int[].
-        for(int i=0;i<cleansed.length;i++)
-        {
-            cleansed[i] = list.get(i);
-        }
-
-        Log.d("id_length_63_",cleansed.length+"");
-
-
-        return cleansed;
+        return list;
     }
 
     private void resetGame()

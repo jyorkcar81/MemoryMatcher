@@ -15,12 +15,11 @@ public class Card
         private boolean matched;
 
 
-        public Card(int idOfImageButton, int idOfPicture, boolean showing)
+        public Card(int idOfPicture)
         {
-            this.idOfImageButton    = idOfImageButton;
             this.idOfPicture        = idOfPicture;
-            this.showing            = showing ;
             matched                 = false;
+            showing                 = false;
         }
 
         public void setShowing(boolean showing)
@@ -28,12 +27,14 @@ public class Card
             this.showing = showing;
         }
 
+        public void setMatched(boolean b){matched=b;}
+
+        public void setIdOfImageButton(int idOfImageButton){this.idOfImageButton=idOfImageButton;}
+
         public boolean isShowing()
         {
             return showing;
         }
-
-        public void setMatched(boolean b){matched=b;}
 
         public int getIdOfImageButton()
         {

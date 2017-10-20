@@ -30,6 +30,8 @@ public class Board
         cards.add(c);
     }
 
+    public void setCards(ArrayList<Card> cards){this.cards = cards;}
+
     public ArrayList<Card> getCards()
     {
          return cards;
