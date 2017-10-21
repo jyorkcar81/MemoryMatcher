@@ -41,7 +41,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private int boardSize;//2x2, 4x4, 3x3...
 
     private int boardRows,
-                boardColumns;
+                boardColumns,
+                matchType;//2 is a pair, 3, 4... whatever
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,6 +116,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             boardRows       =   2;
             boardColumns    =   2;
 
+            matchType = GameFragment.MATCH_TYPE_2;
+
             nextFragment = GAME_FRAGMENT;
 
             msg("2by2");
@@ -125,6 +129,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             boardRows       =   3;
             boardColumns    =   3;
 
+            matchType = GameFragment.MATCH_TYPE_3;
+
             nextFragment = GAME_FRAGMENT;
 
             msg("3by3");
@@ -135,6 +141,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             boardRows       =   4;
             boardColumns    =   4;
+
+            matchType = GameFragment.MATCH_TYPE_2;
 
             nextFragment = GAME_FRAGMENT;
 
@@ -193,6 +201,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 bundle.putInt("boardRows", boardRows);
                 bundle.putInt("boardColumns", boardColumns);
+                bundle.putInt("matchType", matchType);
 
                 GameFragment gf = new GameFragment();
                 gf.setArguments(bundle);

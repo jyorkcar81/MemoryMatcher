@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -32,6 +33,7 @@ import com.example.amd.memorymatcher.other.Card;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Locale;
 import java.util.Random;
 import java.lang.reflect.Field;
 import android.view.ViewGroup.LayoutParams;
@@ -58,10 +60,10 @@ public class GameFragment extends Fragment implements View.OnClickListener{
     private static final int NUMBER_OF_CARD_BACKS   = 5;
     private static final int NUMBER_OF_BACKGROUNDS  = 9;
 
-    private static final int MATCH_TYPE_2 = 2;
-    private static final int MATCH_TYPE_3 = 3;
+    public static final int MATCH_TYPE_2 = 2;
+    public static final int MATCH_TYPE_3 = 3;
 
-    private int matchType;
+    private int matchType;//Match 2 or Match 3 at a time.
 
     private Board board;
     private ArrayList<Card> cards;
@@ -78,14 +80,15 @@ public class GameFragment extends Fragment implements View.OnClickListener{
                 boardColumns;//Number of columns in the boardgame.
 
 
+    private long startTime,endTime,millisecondsTime,secondsTime,minutesTime,updateTime;
+
     private boolean matched;
 
     private Card    firstCard,
                     secondCard;
 
 
-    private int totalMatchesAvailable,
-                gameType; //Match 2 or Match 3 at a time.
+    private int totalMatchesAvailable;
 
 
     private Handler timerHandler;
@@ -100,6 +103,8 @@ public class GameFragment extends Fragment implements View.OnClickListener{
     private TextView    tvScore,
                         tvTime,
                         tvMatchCount;
+
+    private boolean toggleTimer;
 
     private OnFragmentInteractionListener mListener;
 
@@ -133,12 +138,12 @@ public class GameFragment extends Fragment implements View.OnClickListener{
             mParam2 = getArguments().getString(ARG_PARAM2);
             boardRows = getArguments().getInt("boardRows");
             boardColumns = getArguments().getInt("boardColumns");
+            matchType = getArguments().getInt("matchType");
 
         }
 
         msg("board dimensions: "+boardRows+"x"+boardColumns);
-
-        matchType = MATCH_TYPE_2;
+        msg("matchType: "+matchType);
 
         board = new Board(boardRows,boardColumns,matchType);
         boardSize = board.getNumOfCards();
@@ -154,6 +159,7 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
         timerHandler = new Handler();
 
+        toggleTimer = true;
 
         drawableIds = getAllDrawableId();
     }
@@ -317,6 +323,42 @@ public class GameFragment extends Fragment implements View.OnClickListener{
             Log.d("card",test.get(i).getIdOfImageButton()+"");
         }*/
 
+
+        msg("Timer starting...");
+        //The game is all setup now.  UI is ready.  So, start the timer.
+        startTime = SystemClock.uptimeMillis();
+
+        timerHandler.postDelayed(new Runnable(){
+
+            public void run()
+            {
+
+                millisecondsTime = SystemClock.uptimeMillis() - startTime;
+
+                //updateTime = TimeBuff + millisecondsTime;
+                updateTime = millisecondsTime;
+
+                secondsTime = (int) (updateTime / 1000);
+
+                minutesTime = secondsTime / 60;
+
+                secondsTime = secondsTime % 60;
+
+                millisecondsTime = (int) (updateTime % 1000);
+
+                updateStats();
+
+                if(toggleTimer)
+                {
+                    timerHandler.postDelayed(this, 0);
+                }
+            }
+        },0);
+
+
+
+
+
         return v;
     }
 
@@ -374,7 +416,10 @@ public class GameFragment extends Fragment implements View.OnClickListener{
     {
         tvMatchCount.setText(""+matchCount);
         tvScore.setText(""+score);
-        tvTime.setText(""+time);
+        tvTime.setText(     + Long.valueOf(minutesTime).intValue() + ":"
+                            + String.format(Locale.getDefault(),"%02d", Long.valueOf(secondsTime).intValue()) + ":"
+                            + String.format(Locale.getDefault(),"%03d", Long.valueOf(millisecondsTime).intValue()));
+
     }
 
     //Choose an image to put in the grid.
@@ -407,6 +452,12 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         if(threadBusy){return;}
 
         ImageButton imageButton = (ImageButton)v;
+
+
+
+
+
+
 
         if(firstCard == null)
         {
@@ -498,16 +549,26 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
         }
 
-        updateStats();
+
 
         if(isGameOver())
         {
             msg("Game Over!");
 
             //Check if new high score is reached.  If so, add to new entry to DB, else do nothing.
+
+
+            //Stops timer at Game Over.
+            toggleTimer = false;
+
+
+
         }
 
+
+
     }
+
 
     private boolean isGameOver()
     {
