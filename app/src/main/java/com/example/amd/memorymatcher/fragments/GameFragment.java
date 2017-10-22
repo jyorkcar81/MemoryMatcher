@@ -20,6 +20,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -80,7 +81,12 @@ public class GameFragment extends Fragment implements View.OnClickListener{
                 boardColumns;//Number of columns in the boardgame.
 
 
-    private long startTime,endTime,millisecondsTime,secondsTime,minutesTime,updateTime;
+    private long startTime,
+                endTime,
+                millisecondsTime,
+                secondsTime,
+                minutesTime,
+                updateTime;
 
     private boolean matched;
 
@@ -96,7 +102,7 @@ public class GameFragment extends Fragment implements View.OnClickListener{
     private int score,
                 matchCount;//Total matches made.
 
-    private long time;
+
 
     private boolean threadBusy;
 
@@ -105,6 +111,8 @@ public class GameFragment extends Fragment implements View.OnClickListener{
                         tvMatchCount;
 
     private boolean toggleTimer;
+
+    private Button restartButton;
 
     private OnFragmentInteractionListener mListener;
 
@@ -142,8 +150,8 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
         }
 
-        msg("board dimensions: "+boardRows+"x"+boardColumns);
-        msg("matchType: "+matchType);
+        //msg("board dimensions: "+boardRows+"x"+boardColumns);
+        //msg("matchType: "+matchType);
 
         board = new Board(boardRows,boardColumns,matchType);
         boardSize = board.getNumOfCards();
@@ -190,13 +198,13 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         tvTime          = (TextView)v.findViewById(R.id.textViewTime);
         tvMatchCount    = (TextView)v.findViewById(R.id.textViewMatchCount);
 
+        restartButton   = (Button)v.findViewById(R.id.buttonRestart);
+
         updateStats();
 
         //Dynamically create a grid based upon boardSize*boardSize  e.g.  2x2, 4x4... always square
         grid.setColumnCount(boardColumns);
         grid.setRowCount(boardRows);
-
-
 
 
         //use a waiting thread until this is true.
@@ -324,36 +332,33 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         }*/
 
 
-        msg("Timer starting...");
-        //The game is all setup now.  UI is ready.  So, start the timer.
-        startTime = SystemClock.uptimeMillis();
+
 
         timerHandler.postDelayed(new Runnable(){
 
+            private int count = 3;
+
             public void run()
             {
-
-                millisecondsTime = SystemClock.uptimeMillis() - startTime;
-
-                //updateTime = TimeBuff + millisecondsTime;
-                updateTime = millisecondsTime;
-
-                secondsTime = (int) (updateTime / 1000);
-
-                minutesTime = secondsTime / 60;
-
-                secondsTime = secondsTime % 60;
-
-                millisecondsTime = (int) (updateTime % 1000);
-
-                updateStats();
-
-                if(toggleTimer)
+                if(count > 0)
                 {
-                    timerHandler.postDelayed(this, 0);
+                    msg("Ready "+count);
+
+                    timerHandler.postDelayed(this, 1000);
                 }
+                else
+                {
+                    msg("GO!");
+                }
+
+
+                count--;
             }
         },0);
+
+
+
+        startTimer();
 
 
 
@@ -372,8 +377,6 @@ public class GameFragment extends Fragment implements View.OnClickListener{
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-
-
 
         if (context instanceof OnFragmentInteractionListener) {
             mListener = (OnFragmentInteractionListener) context;
@@ -411,6 +414,39 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
 
     //************************************************************
+
+    private void startTimer()
+    {
+        //The game is all setup now.  UI is ready.  So, start the timer.
+        startTime = SystemClock.uptimeMillis();
+
+        timerHandler.postDelayed(new Runnable(){
+
+            public void run()
+            {
+
+                millisecondsTime = SystemClock.uptimeMillis() - startTime;
+
+                //updateTime = TimeBuff + millisecondsTime;
+                updateTime = millisecondsTime;
+
+                secondsTime = (int) (updateTime / 1000);
+
+                minutesTime = secondsTime / 60;
+
+                secondsTime = secondsTime % 60;
+
+                millisecondsTime = (int) (updateTime % 1000);
+
+                updateStats();
+
+                if(toggleTimer)
+                {
+                    timerHandler.postDelayed(this, 0);
+                }
+            }
+        },3100);
+    }
 
     private void updateStats()
     {
@@ -451,13 +487,9 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
         if(threadBusy){return;}
 
+        if(v.getId() == restartButton.getId() ){msg("reset");resetGame();return;}
+
         ImageButton imageButton = (ImageButton)v;
-
-
-
-
-
-
 
         if(firstCard == null)
         {
@@ -495,7 +527,7 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         if(firstCard.getIdOfImageButton() == secondCard.getIdOfImageButton()){msg("same");secondCard=null;return;}
 
         //If clicked card is already matched, do nothing.  Return.
-        if(firstCard.isMatched()){msg("true.  isMatched.");return;}
+        //if(firstCard.isMatched()){msg("true.  isMatched.");return;}
 
 
 
@@ -514,8 +546,8 @@ public class GameFragment extends Fragment implements View.OnClickListener{
             firstCard.setShowing(false);
             secondCard.setShowing(false);
 
-            firstCard.setMatched(true);
-            secondCard.setMatched(true);
+            //firstCard.setMatched(true);
+            //secondCard.setMatched(true);
 
             firstCard = null;
             secondCard = null;
@@ -545,8 +577,6 @@ public class GameFragment extends Fragment implements View.OnClickListener{
                     }
              },delay);
 
-
-
         }
 
 
@@ -569,6 +599,14 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
     }
 
+
+    private void enableGridImageButtons()
+    {
+        for(int i=0;i<gridSize;i++)
+        {
+            grid.getChildAt(i).setEnabled(true);
+        }
+    }
 
     private boolean isGameOver()
     {
@@ -643,15 +681,51 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
     private void resetGame()
     {
+        ImageButton button;
+        int idOfImageButton;
 
+        firstCard   = null;
+        secondCard  = null;
+        threadBusy = false;
 
+        score = 0;
+        matchCount = 0;
 
+        totalMatchesAvailable = board.getTotalMatches();
 
+        timerHandler = new Handler();
 
+        toggleTimer = true;
 
-        //new Board(3,3);
-        //new Board(4,4);
+        drawableIds = getAllDrawableId();
 
+        java.util.Collections.shuffle(cards);//Shuffle the cards, retaining the original selection of pictures.
+
+        for(int i=0;i<gridSize;i++)
+        {
+            button = (ImageButton)grid.getChildAt(i);
+
+            idOfImageButton = button.getId();
+
+            button.setImageResource(cardBack);
+
+            cards.get(i).setIdOfImageButton(idOfImageButton);
+        }
+
+        enableGridImageButtons();
+
+        initTime();
+
+        updateStats();
+
+        startTimer();
+    }
+
+    private void initTime()
+    {
+        minutesTime = 0L;
+        secondsTime = 0L;
+        millisecondsTime = 0L;
     }
 
     public void initListeners()
@@ -660,6 +734,8 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         {
             ((ImageButton)grid.getChildAt(i)).setOnClickListener(this);
         }
+
+        restartButton.setOnClickListener(this);
     }
 
 
