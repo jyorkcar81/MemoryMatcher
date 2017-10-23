@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.example.amd.memorymatcher.R;
 import com.example.amd.memorymatcher.fragments.AboutFragment;
 import com.example.amd.memorymatcher.fragments.GameFragment;
+import com.example.amd.memorymatcher.fragments.HighScoresFragment;
 import com.example.amd.memorymatcher.fragments.TutorialFragment;
 
 
@@ -35,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static final int GAME_FRAGMENT      =   0;
     private static final int ABOUT_FRAGMENT     =   1;
     private static final int TUTORIAL_FRAGMENT  =   2;
+    private static final int HIGH_SCORES_FRAGMENT = 3;
 
     private static int nextFragment;
 
@@ -160,9 +162,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         {
             title = getString(R.string.highscores_title);
 
+            nextFragment = HIGH_SCORES_FRAGMENT;
+
             msg("High Scores");
 
-            startActivity(new Intent(this,HighScores.class));
+
+           // startActivity(new Intent(this,HighScores.class));
         }
         else if (id == R.id.nav_about)
         {
@@ -213,6 +218,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             case TUTORIAL_FRAGMENT:
                 return new TutorialFragment();
+
+            case HIGH_SCORES_FRAGMENT:
+
+
+
+                HighScoresFragment f = new HighScoresFragment();
+
+
+                return f;
+
 
 
             default:

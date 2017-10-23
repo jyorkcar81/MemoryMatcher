@@ -185,10 +185,11 @@ public class GameFragment extends Fragment implements View.OnClickListener{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        int idOfImageButton;
-        int idOfPic;
-        ImageButton button;
-        ImageButton temp;
+        int idOfImageButton,
+            idOfPic;
+
+        ImageButton button,
+                    temp;
 
         // Inflate the layout for this fragment.  i.e. get xml to dynamically add buttons to build the ui
         View v = inflater.inflate(R.layout.fragment_game, container, false);
@@ -334,27 +335,7 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
 
 
-        timerHandler.postDelayed(new Runnable(){
 
-            private int count = 3;
-
-            public void run()
-            {
-                if(count > 0)
-                {
-                    msg("Ready "+count);
-
-                    timerHandler.postDelayed(this, 1000);
-                }
-                else
-                {
-                    msg("GO!");
-                }
-
-
-                count--;
-            }
-        },0);
 
 
 
@@ -417,35 +398,73 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
     private void startTimer()
     {
-        //The game is all setup now.  UI is ready.  So, start the timer.
-        startTime = SystemClock.uptimeMillis();
 
         timerHandler.postDelayed(new Runnable(){
 
+            private int count = 3;
+
             public void run()
             {
-
-                millisecondsTime = SystemClock.uptimeMillis() - startTime;
-
-                //updateTime = TimeBuff + millisecondsTime;
-                updateTime = millisecondsTime;
-
-                secondsTime = (int) (updateTime / 1000);
-
-                minutesTime = secondsTime / 60;
-
-                secondsTime = secondsTime % 60;
-
-                millisecondsTime = (int) (updateTime % 1000);
-
-                updateStats();
-
-                if(toggleTimer)
+                if(count > 0)
                 {
-                    timerHandler.postDelayed(this, 0);
+                    msg("Ready "+count);
+
+                    count--;
+
+                    timerHandler.postDelayed(this, 1000);
                 }
+                else
+                {
+                    msg("GO!");
+
+
+
+                    //The game is all setup now.  UI is ready.  So, start the timer.
+                    startTime = SystemClock.uptimeMillis();
+
+                    timerHandler.postDelayed(new Runnable(){
+
+                        public void run()
+                        {
+
+                            millisecondsTime = SystemClock.uptimeMillis() - startTime;
+
+                            //updateTime = TimeBuff + millisecondsTime;
+                            updateTime = millisecondsTime;
+
+                            secondsTime = (int) (updateTime / 1000);
+
+                            minutesTime = secondsTime / 60;
+
+                            secondsTime = secondsTime % 60;
+
+                            millisecondsTime = (int) (updateTime % 1000);
+
+                            updateStats();
+
+                            if(toggleTimer)
+                            {
+                                timerHandler.postDelayed(this, 0);
+                            }
+                        }
+                    },0);
+
+
+
+
+
+
+                }
+
+
+
             }
-        },3100);
+        },0);
+
+
+
+
+
     }
 
     private void updateStats()
@@ -590,6 +609,7 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
             //Stops timer at Game Over.
             toggleTimer = false;
+
 
 
 

@@ -3,10 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-        android:background="@drawable/bg5"
-        tools:layout_editor_absoluteY="8dp"
-        tools:layout_editor_absoluteX="8dp"
-    tools:context="com.example.amd.memorymatcher.fragments.AboutFragment"  >
+    android:background="@drawable/bg5"
+    android:layout_marginTop="?attr/actionBarSize"
+    tools:context="com.example.amd.memorymatcher.fragments.AboutFragment"
+    tools:layout_editor_absoluteX="8dp"
+    tools:layout_editor_absoluteY="8dp">
 
     <!-- TODO: Update blank fragment layout -->
     <EditText
