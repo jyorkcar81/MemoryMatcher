@@ -156,9 +156,9 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
     }
 
 
-    private void calcRank()//Calculates rank on-the-fly instead of storing directly in DB.  Maybe create a list and QuickSort it.
+    private int calcRank()//Calculates rank on-the-fly instead of storing directly in DB.  Maybe create a list and QuickSort it.
     {
-
+        return 1;
     }
 
     private void updateUI(View v)
@@ -179,9 +179,9 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
         {
             row = (TableRow)table.getChildAt(i);
 
-            rank = cursor.getString(0);
-            name = cursor.getString(1);
-            score = cursor.getInt(2)+"";
+            rank = calcRank()+"";//cursor.getString(0);
+            name = cursor.getString(0);
+            score = cursor.getInt(1)+"";
 
             ((TextView)row.getChildAt(0)).setText(rank);
             ((TextView)row.getChildAt(1)).setText(name);
