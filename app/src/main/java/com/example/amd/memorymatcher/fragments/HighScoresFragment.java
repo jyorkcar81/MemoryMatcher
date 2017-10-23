@@ -1,5 +1,6 @@
 package com.example.amd.memorymatcher.fragments;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -7,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,8 +37,6 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-
-
 
     private String score;
     private String name;
@@ -97,10 +97,8 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
 
         }
 
-
-
-       dbHelper = new Helper(getActivity().getApplicationContext(),DATABASE_NAME,null,DATABASE_VERSION);
-        //db = dbHelper.getReadableDatabase();
+        dbHelper = new Helper(getActivity().getApplicationContext(),DATABASE_NAME,null,DATABASE_VERSION);
+        db = dbHelper.getReadableDatabase();
     }
 
     @Override
@@ -113,37 +111,8 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
 
         button.setOnClickListener(this);
 
-       // TableLayout table = (TableLayout)v.findViewById(R.id.tableLayoutHighScores);
+        updateUI(v);
 
-
-
-/*
-
-
-        //Query the DB for the list of high scores, then display them.
-        cursor = db.query(TABLE_NAME,null,null,null,null,null,null);
-        c.moveToFirst();
-
-        TableRow row;
-        int i=1;
-        while(c.moveToNext())
-        {
-            row = (TableRow)table.getChildAt(i);
-
-            rank = c.getString(0);
-            name = c.getString(1);
-            score = c.getInt(2)+"";
-
-            ((TextView)row.getChildAt(0)).setText(rank);
-            ((TextView)row.getChildAt(1)).setText(name);
-            ((TextView)row.getChildAt(2)).setText(score);
-
-            i++;
-        }
-
-        closeCursor();
-        closeDB();
-*/
         return v;
     }
 
@@ -192,6 +161,40 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
 
     }
 
+    private void updateUI(View v)
+    {
+
+
+        TableLayout table = (TableLayout)v.findViewById(R.id.tableLayoutHighScores);
+
+        //Query the DB for the list of high scores, then display them.
+        cursor = db.query(TABLE_NAME,null,null,null,null,null,null);
+        cursor.moveToFirst();
+
+        Log.d("db_entries",""+cursor.getCount());
+
+        TableRow row;
+        int i=1;
+        while(cursor.moveToNext())
+        {
+            row = (TableRow)table.getChildAt(i);
+
+            rank = cursor.getString(0);
+            name = cursor.getString(1);
+            score = cursor.getInt(2)+"";
+
+            ((TextView)row.getChildAt(0)).setText(rank);
+            ((TextView)row.getChildAt(1)).setText(name);
+            ((TextView)row.getChildAt(2)).setText(score);
+
+            Log.d("db_entry_name",name);
+
+            i++;
+        }
+
+        closeCursor();
+        closeDB();
+    }
 
     public void onClick(View v)
     {
@@ -232,10 +235,56 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
         {
             //Create tables then populate with any default values.
             sqLiteDatabase.execSQL("CREATE TABLE "+TABLE_NAME+"(" +
-                    ID_COLUMN_NAME+"     INTEGER PRIMARY KEY AUTOINCREMENT" +
-                    SCORE_COLUMN_NAME+"  INTEGER NOT NULL" +
+                    ID_COLUMN_NAME+"     INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    SCORE_COLUMN_NAME+"  INTEGER NOT NULL," +
                     NAME_COLUMN_NAME+"   TEXT NOT NULL UNIQUE" +
                     ");");
+
+            //Add some default data.
+
+            sqLiteDatabase = this.getWritableDatabase();
+
+            ContentValues cv = new ContentValues();
+
+            cv.put(SCORE_COLUMN_NAME,"John N.");
+            cv.put(NAME_COLUMN_NAME,500);
+
+            sqLiteDatabase.insert(TABLE_NAME,null,cv);
+
+            cv = new ContentValues();
+
+            cv.put(SCORE_COLUMN_NAME,"Ash A.");
+            cv.put(NAME_COLUMN_NAME,1500);
+
+            sqLiteDatabase.insert(TABLE_NAME,null,cv);
+
+            cv = new ContentValues();
+
+            cv.put(SCORE_COLUMN_NAME,"Elizabeth B.");
+            cv.put(NAME_COLUMN_NAME,2300);
+
+            sqLiteDatabase.insert(TABLE_NAME,null,cv);
+
+            cv = new ContentValues();
+
+            cv.put(SCORE_COLUMN_NAME,"Freddy Q.");
+            cv.put(NAME_COLUMN_NAME,1400);
+
+            sqLiteDatabase.insert(TABLE_NAME,null,cv);
+
+            cv = new ContentValues();
+
+            cv.put(SCORE_COLUMN_NAME,"Google Inc.");
+            cv.put(NAME_COLUMN_NAME,100);
+
+            sqLiteDatabase.insert(TABLE_NAME,null,cv);
+
+            //closedb.
+            if(sqLiteDatabase != null)
+            {
+                sqLiteDatabase.close();
+            }
+
         }
 
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
