@@ -220,15 +220,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 return new TutorialFragment();
 
             case HIGH_SCORES_FRAGMENT:
-
-
-
-                HighScoresFragment f = new HighScoresFragment();
-
-
-                return f;
-
-
+                return new HighScoresFragment();
 
             default:
                 return new AboutFragment();//MainFragment();
