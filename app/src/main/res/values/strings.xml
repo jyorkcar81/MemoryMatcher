@@ -40,5 +40,7 @@
     <string name="name_header">Name</string>
     <string name="score_header">Score</string>
 
+    <!-- Delete DB -->
+    <string name="delete_db">Delete All Scores</string>
 
 </resources>

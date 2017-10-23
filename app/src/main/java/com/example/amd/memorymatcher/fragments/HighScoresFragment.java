@@ -1,6 +1,7 @@
 package com.example.amd.memorymatcher.fragments;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
@@ -9,6 +10,11 @@ import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TableLayout;
+import android.widget.TableRow;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.amd.memorymatcher.R;
 
@@ -20,7 +26,7 @@ import com.example.amd.memorymatcher.R;
  * Use the {@link HighScoresFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class HighScoresFragment extends Fragment {
+public class HighScoresFragment extends Fragment implements View.OnClickListener{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -32,8 +38,9 @@ public class HighScoresFragment extends Fragment {
 
 
 
-
-
+    private String score;
+    private String name;
+    private String rank;
 
     // All Static variables
     // Database Version
@@ -53,6 +60,9 @@ public class HighScoresFragment extends Fragment {
     private SQLiteDatabase db;
     private Helper dbHelper;
 
+    private Cursor cursor;
+
+    private Button button;
 
     private OnFragmentInteractionListener mListener;
 
@@ -84,9 +94,13 @@ public class HighScoresFragment extends Fragment {
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
+
         }
 
-        dbHelper = new Helper(getActivity().getApplicationContext(),DATABASE_NAME,null,DATABASE_VERSION);
+
+
+       dbHelper = new Helper(getActivity().getApplicationContext(),DATABASE_NAME,null,DATABASE_VERSION);
+        //db = dbHelper.getReadableDatabase();
     }
 
     @Override
@@ -95,6 +109,41 @@ public class HighScoresFragment extends Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_high_scores, container, false);
 
+        button = (Button)v.findViewById(R.id.buttonDropDB);
+
+        button.setOnClickListener(this);
+
+       // TableLayout table = (TableLayout)v.findViewById(R.id.tableLayoutHighScores);
+
+
+
+/*
+
+
+        //Query the DB for the list of high scores, then display them.
+        cursor = db.query(TABLE_NAME,null,null,null,null,null,null);
+        c.moveToFirst();
+
+        TableRow row;
+        int i=1;
+        while(c.moveToNext())
+        {
+            row = (TableRow)table.getChildAt(i);
+
+            rank = c.getString(0);
+            name = c.getString(1);
+            score = c.getInt(2)+"";
+
+            ((TextView)row.getChildAt(0)).setText(rank);
+            ((TextView)row.getChildAt(1)).setText(name);
+            ((TextView)row.getChildAt(2)).setText(score);
+
+            i++;
+        }
+
+        closeCursor();
+        closeDB();
+*/
         return v;
     }
 
@@ -138,7 +187,22 @@ public class HighScoresFragment extends Fragment {
     }
 
 
+    private void calcRank()//Calculates rank on-the-fly instead of storing directly in DB.  Maybe create a list and QuickSort it.
+    {
 
+    }
+
+
+    public void onClick(View v)
+    {
+
+
+  /*      db = dbHelper.getWritableDatabase();
+
+        db.execSQL("DROP TABLE IF EXISTS "+TABLE_NAME);
+
+        closeDB();*/
+    }
 
     private void closeDB()
     {
@@ -148,6 +212,13 @@ public class HighScoresFragment extends Fragment {
         }
     }
 
+    private void closeCursor()
+    {
+        if(cursor != null)
+        {
+            cursor.close();
+        }
+    }
 
     private static class Helper extends SQLiteOpenHelper
     {
@@ -174,4 +245,8 @@ public class HighScoresFragment extends Fragment {
         }
 
     }
+
+
+
+
 }
