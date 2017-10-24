@@ -51,7 +51,7 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
 
     private static final String TABLE_NAME = "highscores";
 
-    private static final String ID_COLUMN_NAME = "id";
+    private static final String ID_COLUMN_NAME = "_id";
 
     private static final String SCORE_COLUMN_NAME = "score";
 
@@ -63,6 +63,8 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
     private Cursor cursor;
 
     private Button button;
+
+    private TableLayout table;
 
     private OnFragmentInteractionListener mListener;
 
@@ -97,8 +99,16 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
 
         }
 
-        dbHelper = new Helper(getActivity().getApplicationContext(),DATABASE_NAME,null,DATABASE_VERSION);
-        db = dbHelper.getReadableDatabase();
+
+        //FOR TESTING ONLY.  DELETE DB IF ALREADY EXISTS.
+        getActivity().deleteDatabase(DATABASE_NAME);
+
+
+
+
+        dbHelper = new Helper(getActivity(),DATABASE_NAME,null,DATABASE_VERSION);
+        Log.d("getApplicationContext",""+getActivity());
+
     }
 
     @Override
@@ -106,12 +116,13 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_high_scores, container, false);
+        table = (TableLayout)v.findViewById(R.id.tableLayoutHighScores);
 
         button = (Button)v.findViewById(R.id.buttonDropDB);
 
         button.setOnClickListener(this);
 
-        updateUI(v);
+        updateUI();
 
         return v;
     }
@@ -161,27 +172,28 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
 
     }
 
-    private void updateUI(View v)
+    //Query the DB for the list of high scores, then display them.
+    private void updateUI()
     {
+        db = dbHelper.getReadableDatabase();
 
+        Log.d("db",db.toString());
 
-        TableLayout table = (TableLayout)v.findViewById(R.id.tableLayoutHighScores);
+        //Query the DB for the list of high scores, then display them.  From High Score to Lowest Score.
+        cursor = db.rawQuery("SELECT * FROM "+TABLE_NAME+" ORDER BY "+SCORE_COLUMN_NAME+" DESC",null);
 
-        //Query the DB for the list of high scores, then display them.
-        cursor = db.query(TABLE_NAME,null,null,null,null,null,null);
-        cursor.moveToFirst();
-
-        Log.d("db_entries",""+cursor.getCount());
+        boolean hasRows = cursor.moveToFirst();
 
         TableRow row;
         int i=1;
-        while(cursor.moveToNext())
+        String rank="1";
+
+        while(hasRows)
         {
             row = (TableRow)table.getChildAt(i);
 
-            rank = cursor.getString(0);
             name = cursor.getString(1);
-            score = cursor.getInt(2)+"";
+            score = Integer.valueOf(cursor.getInt(2)).toString();
 
             ((TextView)row.getChildAt(0)).setText(rank);
             ((TextView)row.getChildAt(1)).setText(name);
@@ -189,7 +201,10 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
 
             Log.d("db_entry_name",name);
 
+            rank = Integer.valueOf(Integer.parseInt(rank) + 1).toString();
             i++;
+
+            hasRows = cursor.moveToNext();
         }
 
         closeCursor();
@@ -198,13 +213,13 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
 
     public void onClick(View v)
     {
-
-
-  /*      db = dbHelper.getWritableDatabase();
+        db = dbHelper.getWritableDatabase();
 
         db.execSQL("DROP TABLE IF EXISTS "+TABLE_NAME);
 
-        closeDB();*/
+        updateUI();
+
+        closeDB();
     }
 
     private void closeDB()
@@ -225,7 +240,7 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
 
     private static class Helper extends SQLiteOpenHelper
     {
-        Helper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version)
+        public Helper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version)
         {
             super(context, name, factory, version);
         }
@@ -234,56 +249,50 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
         public void onCreate(SQLiteDatabase sqLiteDatabase)
         {
             //Create tables then populate with any default values.
-            sqLiteDatabase.execSQL("CREATE TABLE "+TABLE_NAME+"(" +
-                    ID_COLUMN_NAME+"     INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    SCORE_COLUMN_NAME+"  INTEGER NOT NULL," +
-                    NAME_COLUMN_NAME+"   TEXT NOT NULL UNIQUE" +
+            sqLiteDatabase.execSQL("CREATE TABLE "+TABLE_NAME+" (" +
+                    ID_COLUMN_NAME+"     INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    NAME_COLUMN_NAME+"   TEXT NOT NULL UNIQUE, " +
+                    SCORE_COLUMN_NAME+"  INTEGER NOT NULL " +
                     ");");
 
             //Add some default data.
 
-            sqLiteDatabase = this.getWritableDatabase();
-
             ContentValues cv = new ContentValues();
 
-            cv.put(SCORE_COLUMN_NAME,"John N.");
-            cv.put(NAME_COLUMN_NAME,500);
+            cv.put(SCORE_COLUMN_NAME,500);
+            cv.put(NAME_COLUMN_NAME,"John N.");
+
 
             sqLiteDatabase.insert(TABLE_NAME,null,cv);
 
-            cv = new ContentValues();
+            cv.clear();
 
-            cv.put(SCORE_COLUMN_NAME,"Ash A.");
-            cv.put(NAME_COLUMN_NAME,1500);
+            cv.put(SCORE_COLUMN_NAME,1500);
+            cv.put(NAME_COLUMN_NAME,"Ash A.");
 
-            sqLiteDatabase.insert(TABLE_NAME,null,cv);
-
-            cv = new ContentValues();
-
-            cv.put(SCORE_COLUMN_NAME,"Elizabeth B.");
-            cv.put(NAME_COLUMN_NAME,2300);
 
             sqLiteDatabase.insert(TABLE_NAME,null,cv);
 
-            cv = new ContentValues();
+            cv.clear();
 
-            cv.put(SCORE_COLUMN_NAME,"Freddy Q.");
-            cv.put(NAME_COLUMN_NAME,1400);
-
-            sqLiteDatabase.insert(TABLE_NAME,null,cv);
-
-            cv = new ContentValues();
-
-            cv.put(SCORE_COLUMN_NAME,"Google Inc.");
-            cv.put(NAME_COLUMN_NAME,100);
+            cv.put(SCORE_COLUMN_NAME,2300);
+            cv.put(NAME_COLUMN_NAME,"Elizabeth B.");
 
             sqLiteDatabase.insert(TABLE_NAME,null,cv);
 
-            //closedb.
-            if(sqLiteDatabase != null)
-            {
-                sqLiteDatabase.close();
-            }
+            cv.clear();
+
+            cv.put(SCORE_COLUMN_NAME,1400);
+            cv.put(NAME_COLUMN_NAME,"Freddy Q.");
+
+            sqLiteDatabase.insert(TABLE_NAME,null,cv);
+
+            cv.clear();
+
+            cv.put(SCORE_COLUMN_NAME,100);
+            cv.put(NAME_COLUMN_NAME,"Google Inc.");
+
+            sqLiteDatabase.insert(TABLE_NAME,null,cv);
 
         }
 

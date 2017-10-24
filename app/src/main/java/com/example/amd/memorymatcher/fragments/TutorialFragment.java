@@ -4,11 +4,11 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.example.amd.memorymatcher.R;
@@ -75,7 +75,15 @@ public class TutorialFragment extends Fragment implements View.OnClickListener{
         View v = inflater.inflate(R.layout.fragment_tutorial, container, false);
         button = (Button)v.findViewById(R.id.buttonWatchVideo);
         video = (VideoView)v.findViewById(R.id.videoView);
-        video.setVideoPath("");
+
+        String path = "android.resource://" + inflater.getContext().getPackageName() + "/" + R.raw.s;
+
+        Uri uri = android.net.Uri.parse(path);
+
+        video.setVideoURI(uri);
+Log.d("uri",uri.toString());
+        video.requestFocus();
+
         button.setOnClickListener(this);
         return v;
     }
@@ -122,7 +130,7 @@ public class TutorialFragment extends Fragment implements View.OnClickListener{
     //Button listener.
     public void onClick(View v)
     {
-        Toast.makeText(v.getContext(),"watch video...",Toast.LENGTH_SHORT).show();
+
         //play the video.
         if(v.getId() == button.getId())
         {

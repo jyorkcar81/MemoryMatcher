@@ -9,8 +9,6 @@
     <string name="emailAddress">jyorkcar@sbcglobal.net</string>
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-
 
     <!-- Titles of fragments and activities -->
     <string name="two_by_two_title">Match 2</string>
@@ -20,6 +18,13 @@
     <string name="highscores_title">High Scores</string>
     <string name="about_title">About</string>
 
+    <!-- Navigation Drawer Labels -->
+    <string name="nav_twotwo">2x2</string>
+    <string name="nav_threethree">3x3</string>
+    <string name="nav_fourfour">4x4</string>
+    <string name="nav_tutorial">Tutorial</string>
+    <string name="nav_highscores">High Scores</string>
+    <string name="nav_about">About</string>
 
     <!-- Info for About -->
     <string name="about_info">This app was created with Android Studio.</string>
