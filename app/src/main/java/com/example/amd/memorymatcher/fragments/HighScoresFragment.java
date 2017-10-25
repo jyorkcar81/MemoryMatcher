@@ -3,6 +3,7 @@ package com.example.amd.memorymatcher.fragments;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.app.FragmentTransaction;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -139,12 +140,13 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
 
         if(true)//isNewHighScore())
         {
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
             //If new high score is reached by the game player, then 1.  Get name.  2.  Insert new record in DB.
             UsernameDialogFragment dialog = new UsernameDialogFragment();
 
-            dialog.show(getFragmentManager(), "dialog");
+            dialog.show(ft, "dialog");
 
-            username = username;
+
 
             username = username.substring(0,MAX_USERNAME_LENGTH);
 
@@ -414,11 +416,11 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
 
             LayoutInflater inflater = getActivity().getLayoutInflater();
 
-            final View v = inflater.inflate(R.layout.custom_user, null);
+
 
             // Inflate and set the layout for the dialog
             // Pass null as the parent view because its going in the dialog layout
-            builder.setView(v)
+            builder.setView(inflater.inflate(R.layout.custom_user, null))
                     // Add action buttons
                     .setPositiveButton(R.string.ok_button, new DialogInterface.OnClickListener()
                     {
@@ -426,8 +428,8 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
                         public void onClick(DialogInterface dialog, int id)
                         {
                             // sign in the user ...
-                            EditText text = (EditText)v.findViewById(R.id.editTextUsername);
-                            username = text.getText().toString();
+               //             EditText text = (EditText)v.findViewById(R.id.editTextUsername);
+               //             username = text.getText().toString();
 
                         }
                     })
