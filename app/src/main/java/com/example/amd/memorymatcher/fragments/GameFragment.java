@@ -1,6 +1,7 @@
 package com.example.amd.memorymatcher.fragments;
 
 import android.app.Activity;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -611,8 +612,9 @@ public class GameFragment extends Fragment implements View.OnClickListener{
             toggleTimer = false;
 
 
-
-
+            HighScoresFragment fragment = HighScoresFragment.newInstance(score);
+            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.framelayout, fragment).commit();
         }
 
 

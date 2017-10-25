@@ -39,6 +39,8 @@
     <!-- various button labels -->
     <string name="restart_button">Restart</string>
     <string name="watch_button">Watch</string>
+    <string name="ok_button">OK</string>
+    <string name="cancel_button">Cancel</string>
 
     <!-- High Score Column Headers -->
     <string name="rank_header">Rank</string>
