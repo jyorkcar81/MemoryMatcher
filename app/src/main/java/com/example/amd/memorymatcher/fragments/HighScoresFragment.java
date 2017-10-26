@@ -70,8 +70,8 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
 
     private static int MAX_USERNAME_LENGTH=15;//Max_length for userprovided name for recording new high scores.
 
-    private SQLiteDatabase db;
-    private Helper dbHelper;
+    private static SQLiteDatabase db;
+    private static Helper dbHelper;
 
     private Cursor cursor;
 
@@ -145,14 +145,6 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
             UsernameDialogFragment dialog = new UsernameDialogFragment();
 
             dialog.show(ft, "dialog");
-
-
-
-
-
-
-
-
 
         }
         else
@@ -296,10 +288,7 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
         return false;
     }
 
-    public void insertScore()//Adds a new high score to the DB.
-    {
-        db = dbHelper.getWritableDatabase();
-    }
+
 
 
     private void closeDB()
@@ -407,7 +396,7 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
                         @Override
                         public void onClick(DialogInterface dialog, int id)
                         {
-                            // sign in the user ...
+
 
                             username = text.getText().toString();
 
@@ -433,8 +422,17 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
                                 Log.d("possibleHigh",possibleHighScore+"");
                                 Log.d("uname",username);
 
-                                // db.insert(TABLE_NAME,null,cv);
+                                //Database may need to be opened and writeable to make the insert.
+                                if( !db.isOpen() || db.isReadOnly() )
+                                {
+                                    db = dbHelper.getWritableDatabase();
+                                }
 
+
+
+
+                                long rowID = db.insert(TABLE_NAME,null,cv);
+                                Log.d("rowID",rowID+"");
                                 cv.clear();
                             }
 

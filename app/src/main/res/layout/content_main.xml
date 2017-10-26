@@ -5,6 +5,8 @@
     android:id="@+id/framelayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_marginTop="?attr/actionBarSize"
+    android:background="@drawable/bg5"
     app:layout_constraintTop_toTopOf="parent"
     tools:layout_editor_absoluteX="8dp">
     <!--
