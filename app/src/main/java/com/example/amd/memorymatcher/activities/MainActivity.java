@@ -2,6 +2,7 @@ package com.example.amd.memorymatcher.activities;
 
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -71,6 +72,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+
+
+
+
+
     }
 
     @Override
@@ -98,18 +105,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
 
 
-        switch(id)
-        {
-            case R.id.nav_about:
-                return true;
-            case R.id.nav_highscores:
-                return true;
-            case R.id.nav_tutorial:
-                return true;
-            default:
-                return true;
-        }
-
+        return true;
 
         //noinspection SimplifiableIfStatement
         /*if (id == R.id.action_settings) {
@@ -136,7 +132,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             nextFragment = GAME_FRAGMENT;
 
-            msg("2by2");
+
         }
         else if (id == R.id.nav_3by3)
         {
@@ -149,7 +145,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             nextFragment = GAME_FRAGMENT;
 
-            msg("3by3");
+
         }
         else if (id == R.id.nav_4by4)
         {
@@ -162,7 +158,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             nextFragment = GAME_FRAGMENT;
 
-            msg("4by4");
+
         }
         else if (id == R.id.nav_tutorial)
         {
@@ -170,7 +166,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             nextFragment = TUTORIAL_FRAGMENT;
 
-            msg("Tutorial");
+
         }
         else if (id == R.id.nav_highscores)
         {
@@ -178,7 +174,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             nextFragment = HIGH_SCORES_FRAGMENT;
 
-            msg("High Scores");
+
 
 
            // startActivity(new Intent(this,HighScores.class));
@@ -189,7 +185,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             nextFragment = ABOUT_FRAGMENT;
 
-            msg("About");
+
         }
         else
         {
@@ -237,7 +233,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 return new HighScoresFragment();
 
             default:
-                return new AboutFragment();//MainFragment();
+                return new AboutFragment();
         }
     }
 
@@ -282,8 +278,29 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
 
+/*
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        // Checks the orientation of the screen
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            Toast.makeText(this, "landscape", Toast.LENGTH_SHORT).show();
+        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
+            Toast.makeText(this, "portrait", Toast.LENGTH_SHORT).show();
+        }
+    }
 
 
 
+
+            int currentOrientation = getResources().getConfiguration().orientation;
+        // Checks the orientation of the screen
+        if (currentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
+            Toast.makeText(this, "landscape", Toast.LENGTH_SHORT).show();
+        } else if (currentOrientation == Configuration.ORIENTATION_PORTRAIT){
+            Toast.makeText(this, "portrait", Toast.LENGTH_SHORT).show();
+        }
+*/
 
 }

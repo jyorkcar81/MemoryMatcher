@@ -138,7 +138,7 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
 
         button.setOnClickListener(this);
 
-        if(true)//isNewHighScore())
+        if(isNewHighScore())
         {
             FragmentTransaction ft = getFragmentManager().beginTransaction();
             //If new high score is reached by the game player, then 1.  Get name.  2.  Insert new record in DB.
@@ -146,6 +146,7 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
 
             dialog.show(ft, "dialog");
 
+            v.invalidate();
         }
         else
         {
@@ -243,7 +244,7 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
     {
         db = dbHelper.getWritableDatabase();
 
-        db.execSQL("DROP TABLE IF EXISTS "+TABLE_NAME);
+        db.execSQL("DELETE FROM "+TABLE_NAME);
 
         updateUI();
     }
@@ -422,17 +423,14 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
                                 Log.d("possibleHigh",possibleHighScore+"");
                                 Log.d("uname",username);
 
-                                //Database may need to be opened and writeable to make the insert.
+                                //Database may need to be opened and writable to make the insert.
                                 if( !db.isOpen() || db.isReadOnly() )
                                 {
                                     db = dbHelper.getWritableDatabase();
                                 }
 
+                                db.insert(TABLE_NAME,null,cv);
 
-
-
-                                long rowID = db.insert(TABLE_NAME,null,cv);
-                                Log.d("rowID",rowID+"");
                                 cv.clear();
                             }
 

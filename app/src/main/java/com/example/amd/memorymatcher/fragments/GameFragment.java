@@ -597,18 +597,7 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
     private boolean isGameOver()
     {
-        boolean gameOver = false;
-
-        if(matchCount == totalMatchesAvailable)
-        {
-            gameOver = true;
-        }
-        else
-        {
-            gameOver = false;
-        }
-
-        return gameOver;
+         return matchCount == totalMatchesAvailable;
     }
 
 
@@ -724,8 +713,6 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
         restartButton.setOnClickListener(this);
     }
-
-
 
     private int getCardBackImage()
     {
