@@ -399,72 +399,37 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
     private void startTimer()
     {
+        msg("GO!");
+
+        //The game is all setup now.  UI is ready.  So, start the timer.
+        startTime = SystemClock.uptimeMillis();
 
         timerHandler.postDelayed(new Runnable(){
 
-            private int count = 3;
-
             public void run()
             {
-                if(count > 0)
+
+                millisecondsTime = SystemClock.uptimeMillis() - startTime;
+
+                //updateTime = TimeBuff + millisecondsTime;
+                updateTime = millisecondsTime;
+
+                secondsTime = (int) (updateTime / 1000);
+
+                minutesTime = secondsTime / 60;
+
+                secondsTime = secondsTime % 60;
+
+                millisecondsTime = (int) (updateTime % 1000);
+
+                updateStats();
+
+                if(toggleTimer)
                 {
-                    msg("Ready "+count);
-
-                    count--;
-
-                    timerHandler.postDelayed(this, 1000);
+                    timerHandler.postDelayed(this, 0);
                 }
-                else
-                {
-                    msg("GO!");
-
-
-
-                    //The game is all setup now.  UI is ready.  So, start the timer.
-                    startTime = SystemClock.uptimeMillis();
-
-                    timerHandler.postDelayed(new Runnable(){
-
-                        public void run()
-                        {
-
-                            millisecondsTime = SystemClock.uptimeMillis() - startTime;
-
-                            //updateTime = TimeBuff + millisecondsTime;
-                            updateTime = millisecondsTime;
-
-                            secondsTime = (int) (updateTime / 1000);
-
-                            minutesTime = secondsTime / 60;
-
-                            secondsTime = secondsTime % 60;
-
-                            millisecondsTime = (int) (updateTime % 1000);
-
-                            updateStats();
-
-                            if(toggleTimer)
-                            {
-                                timerHandler.postDelayed(this, 0);
-                            }
-                        }
-                    },0);
-
-
-
-
-
-
-                }
-
-
-
             }
         },0);
-
-
-
-
 
     }
 

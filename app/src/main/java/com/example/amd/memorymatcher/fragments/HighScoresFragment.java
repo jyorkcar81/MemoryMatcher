@@ -49,7 +49,7 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
     private String rank;
 
 
-    private int possibleHighScore;//After a game is completed the score is comapred to the entries in the DB.  It's then deteremined a high score or not.
+    private static int possibleHighScore;//After a game is completed the score is comapred to the entries in the DB.  It's then deteremined a high score or not.
 
     // All Static variables
     // Database Version
@@ -148,28 +148,6 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
 
 
 
-            username = username.substring(0,MAX_USERNAME_LENGTH);
-
-            Log.d("user",username);
-
-            //Limit the name to a certain length.
-
-            //username must be at least 1 character... i.e.  The user must have entered a name then pressed OK.
-
-                if(username.length() >= 1)
-                {
-                    ContentValues cv = new ContentValues();
-
-                    cv.put(SCORE_COLUMN_NAME,possibleHighScore);
-                    cv.put(NAME_COLUMN_NAME,username);
-
-                    Log.d("possibleHigh",possibleHighScore+"");
-                    Log.d("uname",username);
-
-                    // db.insert(TABLE_NAME,null,cv);
-
-                    cv.clear();
-                }
 
 
 
@@ -416,11 +394,13 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
 
             LayoutInflater inflater = getActivity().getLayoutInflater();
 
+            final View v = inflater.inflate(R.layout.custom_user, null);
 
+            final EditText text = (EditText)v.findViewById(R.id.editTextUsername);
 
             // Inflate and set the layout for the dialog
             // Pass null as the parent view because its going in the dialog layout
-            builder.setView(inflater.inflate(R.layout.custom_user, null))
+            builder.setView(v)
                     // Add action buttons
                     .setPositiveButton(R.string.ok_button, new DialogInterface.OnClickListener()
                     {
@@ -428,8 +408,35 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
                         public void onClick(DialogInterface dialog, int id)
                         {
                             // sign in the user ...
-               //             EditText text = (EditText)v.findViewById(R.id.editTextUsername);
-               //             username = text.getText().toString();
+
+                            username = text.getText().toString();
+
+                            //If usernamer exceeds 15 chars, then it needs to be truncated.
+                            if(username.length() > MAX_USERNAME_LENGTH)
+                            {
+                                username = username.substring(0,MAX_USERNAME_LENGTH);
+                            }
+
+                            Log.d("user",username);
+
+                            //Limit the name to a certain length.
+
+                            //username must be at least 1 character... i.e.  The user must have entered a name then pressed OK.
+
+                            if(username.length() >= 1)
+                            {
+                                ContentValues cv = new ContentValues();
+
+                                cv.put(SCORE_COLUMN_NAME,possibleHighScore);
+                                cv.put(NAME_COLUMN_NAME,username);
+
+                                Log.d("possibleHigh",possibleHighScore+"");
+                                Log.d("uname",username);
+
+                                // db.insert(TABLE_NAME,null,cv);
+
+                                cv.clear();
+                            }
 
                         }
                     })
