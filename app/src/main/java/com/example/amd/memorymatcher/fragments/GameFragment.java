@@ -478,8 +478,10 @@ public class GameFragment extends Fragment implements View.OnClickListener{
                 if( ((Card)cards.get(i)).getIdOfImageButton() == imageButton.getId() )
                 {
                     firstCard = (Card)cards.get(i);
-                    firstCard.setShowing(true);
+
                     imageButton.setImageResource(firstCard.getIdOfPic());
+                    imageButton.setEnabled(false);
+
                     return;
                 }
             }
@@ -493,15 +495,14 @@ public class GameFragment extends Fragment implements View.OnClickListener{
                 if( ((Card)cards.get(i)).getIdOfImageButton() == imageButton.getId() )
                 {
                     secondCard = (Card)cards.get(i);
-                    secondCard.setShowing(true);
+
                     imageButton.setImageResource(secondCard.getIdOfPic());
+                    imageButton.setEnabled(false);
+
                     break;
                 }
             }
         }
-
-        //If same card is clicked twice, do nothing.  Return.
-        if(firstCard.getIdOfImageButton() == secondCard.getIdOfImageButton()){msg("same");secondCard=null;return;}
 
         //With two different cards selected, test for match.
         if(firstCard.getIdOfPic() == secondCard.getIdOfPic())
@@ -515,16 +516,11 @@ public class GameFragment extends Fragment implements View.OnClickListener{
             grid.findViewById(firstCard.getIdOfImageButton()).setEnabled(false);
             grid.findViewById(secondCard.getIdOfImageButton()).setEnabled(false);
 
-            firstCard.setShowing(false);
-            secondCard.setShowing(false);
-
-            firstCard = null;
-            secondCard = null;
+            firstCard   = null;
+            secondCard  = null;
         }
         else  //No match is made, so reset the cards.  Flip.  Show cardBack after short delay.
         {
-            firstCard.setShowing(false);
-            secondCard.setShowing(false);
 
             threadBusy = true;
 
@@ -534,8 +530,13 @@ public class GameFragment extends Fragment implements View.OnClickListener{
                 public void run()
                 {
                     //Turn card over.  Show backside of cards.
-                    ((ImageButton)grid.findViewById(firstCard.getIdOfImageButton())).setImageResource(cardBack);
-                    ((ImageButton)grid.findViewById(secondCard.getIdOfImageButton())).setImageResource(cardBack);
+                    ImageButton i1 = ((ImageButton)grid.findViewById(firstCard.getIdOfImageButton()));
+                    i1.setImageResource(cardBack);
+                    i1.setEnabled(true);
+
+                    ImageButton i2 = ((ImageButton)grid.findViewById(secondCard.getIdOfImageButton()));
+                    i2.setImageResource(cardBack);
+                    i2.setEnabled(true);
 
                     firstCard   = null;
                     secondCard  = null;
@@ -557,8 +558,10 @@ public class GameFragment extends Fragment implements View.OnClickListener{
                 if( ((Card)cards.get(i)).getIdOfImageButton() == imageButton.getId() )
                 {
                     firstCard = (Card)cards.get(i);
-                    firstCard.setShowing(true);
+
                     imageButton.setImageResource(firstCard.getIdOfPic());
+                    imageButton.setEnabled(false);
+
                     return;
                 }
             }
@@ -572,8 +575,10 @@ public class GameFragment extends Fragment implements View.OnClickListener{
                 if( ((Card)cards.get(i)).getIdOfImageButton() == imageButton.getId() )
                 {
                     secondCard = (Card)cards.get(i);
-                    secondCard.setShowing(true);
+
                     imageButton.setImageResource(secondCard.getIdOfPic());
+                    imageButton.setEnabled(false);
+
                     return;
                 }
             }
@@ -587,22 +592,14 @@ public class GameFragment extends Fragment implements View.OnClickListener{
                 if( ((Card)cards.get(i)).getIdOfImageButton() == imageButton.getId() )
                 {
                     thirdCard = (Card)cards.get(i);
-                    thirdCard.setShowing(true);
+
                     imageButton.setImageResource(thirdCard.getIdOfPic());
+                    imageButton.setEnabled(false);
+
                     break;
                 }
             }
         }
-
-        //If same card is clicked twice, do nothing.  Return.
-        if(firstCard.getIdOfImageButton() == secondCard.getIdOfImageButton()){msg("same");secondCard=null;return;}
-
-
-        if(secondCard.getIdOfImageButton() == thirdCard.getIdOfImageButton()){msg("same");thirdCard=null;return;}
-
-
-        if(thirdCard.getIdOfImageButton() == firstCard.getIdOfImageButton()){msg("same");thirdCard=null;return;}
-
 
         //With two different cards selected, test for match.
         if(firstCard.getIdOfPic() == secondCard.getIdOfPic() && (secondCard.getIdOfPic() == thirdCard.getIdOfPic()) )
@@ -625,7 +622,6 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         else  //No match is made, so reset the cards.  Flip.  Show cardBack after short delay.
         {
 
-
             threadBusy = true;
 
             Handler handler = new Handler();
@@ -633,10 +629,20 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
                 public void run()
                 {
+
                     //Turn card over.  Show backside of cards.
-                    ((ImageButton)grid.findViewById(firstCard.getIdOfImageButton())).setImageResource(cardBack);
-                    ((ImageButton)grid.findViewById(secondCard.getIdOfImageButton())).setImageResource(cardBack);
-                    ((ImageButton)grid.findViewById(thirdCard.getIdOfImageButton())).setImageResource(cardBack);
+
+                    ImageButton i1 = ((ImageButton)grid.findViewById(firstCard.getIdOfImageButton()));
+                    i1.setImageResource(cardBack);
+                    i1.setEnabled(true);
+
+                    ImageButton i2 = ((ImageButton)grid.findViewById(secondCard.getIdOfImageButton()));
+                    i2.setImageResource(cardBack);
+                    i2.setEnabled(true);
+
+                    ImageButton i3 = ((ImageButton)grid.findViewById(thirdCard.getIdOfImageButton()));
+                    i3.setImageResource(cardBack);
+                    i3.setEnabled(true);
 
                     firstCard   = null;
                     secondCard  = null;
@@ -691,9 +697,30 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
     private void showHighScores()
     {
-        HighScoresFragment fragment = HighScoresFragment.newInstance(score);
-        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.framelayout, fragment).commit();
+        //Wait three seconds, then show the scores.
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable()
+        {
+            private int count = 5;//Number of seconds to wait.
+            private final long second = 1000L;//1 second.
+
+            public void run()
+            {
+                if(count > 0)
+                {
+                    timerHandler.postDelayed(this, second);
+                    count--;
+                }
+                else
+                {
+                    HighScoresFragment fragment = HighScoresFragment.newInstance(score);
+                    FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                    fragmentTransaction.replace(R.id.framelayout, fragment).commit();
+                }
+            }
+        },0);
+
+
     }
 
 
@@ -869,20 +896,6 @@ public class GameFragment extends Fragment implements View.OnClickListener{
                 return R.drawable.bg9;
             default:
                 return R.drawable.bg1;
-        }
-    }
-
-    //Go through the list of cards and flip-over all the non-matched cards back to showing their backside.
-    private void turnCardsOver()
-    {
-
-        for(int i=0;i<cards.size();i++)
-        {
-            if(!cards.get(i).isShowing())
-            {
-                //flip card.
-                ((ImageButton)grid.getChildAt(i)).setImageResource(cardBack);
-            }
         }
     }
 
