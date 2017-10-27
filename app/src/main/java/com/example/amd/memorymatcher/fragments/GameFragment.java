@@ -65,6 +65,9 @@ public class GameFragment extends Fragment implements View.OnClickListener{
     public static final int MATCH_TYPE_2 = 2;
     public static final int MATCH_TYPE_3 = 3;
 
+    private static final long CARD_FLIP_DELAY = 1000L;//wait this long before flipping over a card (in milliseconds).  i.e.  changing its image.
+
+
     private int matchType;//Match 2 or Match 3 at a time.
 
     private Board board;
@@ -92,7 +95,8 @@ public class GameFragment extends Fragment implements View.OnClickListener{
     private boolean matched;
 
     private Card    firstCard,
-                    secondCard;
+                    secondCard,
+                    thirdCard;
 
 
     private int totalMatchesAvailable;
@@ -159,6 +163,7 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         gridSize = board.getNumOfCards();
         firstCard   = null;
         secondCard  = null;
+        thirdCard   = null;
         threadBusy = false;
 
         score = 0;
@@ -212,41 +217,31 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         //use a waiting thread until this is true.
 
 
+        msg("board size:"+board.getNumOfCards());
 
-        if(isAdded())//Fragment must be attached for getApplication to not be null.
-        {
-
-            msg("board size:"+board.getNumOfCards());
-
-              /*
+        /*
                     Cards ---> Grid cells
                     1,2,3,4 --- >  1,2,3,4
                     shuffle cards
                     4,2,1,3 ----> 1,2,3,4
 
-              */
+        */
 
-                for(int i=0; i < gridSize; i++)
-                {
-                    Context context = inflater.getContext();
-                    temp = new ImageButton(context);
-                    temp.setScaleType(ImageView.ScaleType.FIT_XY);
-                    temp.setLayoutParams(new ViewGroup.LayoutParams(100,100));
-                    temp.setId(View.generateViewId());
-
-                    grid.addView(temp);
-                }
-
-        }
-        else
+        for(int i=0; i < gridSize; i++)
         {
-            //
+            Context context = inflater.getContext();
+            temp = new ImageButton(context);
+            temp.setScaleType(ImageView.ScaleType.FIT_XY);
+            temp.setLayoutParams(new ViewGroup.LayoutParams(100,100));
+            temp.setId(View.generateViewId());
+
+            grid.addView(temp);
         }
+
 
 
 
         initListeners();
-
 
         v.setBackgroundResource(getBackground());//Assign a random background.
 
@@ -255,17 +250,34 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         cardBack = getCardBackImage();
 
         ArrayList<Card> tempList = new ArrayList<Card>();
-//for multiple of 2 boards:
-        for(int i=0; i < gridSize ; i++)
+
+        if(matchType == MATCH_TYPE_2)//pair-matching
         {
-            idOfPic = chooseImage();
+            for(int i=0; i < gridSize ; i+=2)
+            {
+                idOfPic = chooseImage();
 
-            tempList.add(new Card(idOfPic));
-
-            i++;
-
-            tempList.add(new Card(idOfPic));
+                tempList.add(new Card(idOfPic));
+                tempList.add(new Card(idOfPic));
+            }
         }
+        else if(matchType == MATCH_TYPE_3)//triple-matching
+        {
+            for(int i=0; i < gridSize ; i+=3)
+            {
+                idOfPic = chooseImage();
+
+                tempList.add(new Card(idOfPic));
+                tempList.add(new Card(idOfPic));
+                tempList.add(new Card(idOfPic));
+            }
+        }
+        else
+        {
+            //Major problem and should be unreachable.
+        }
+
+
 
         java.util.Collections.shuffle(tempList);
 
@@ -298,11 +310,10 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         Log.d("address2",""+board.getCards());
 
 
+        startTimer();
 
 
 
-        //cards = board.getCards();
-        //board.shuffle();
 
 
         //show the cards in the log to see their order
@@ -332,17 +343,6 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
             Log.d("card",test.get(i).getIdOfImageButton()+"");
         }*/
-
-
-
-
-
-
-
-
-        startTimer();
-
-
 
 
 
@@ -467,15 +467,9 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         return id;
     }
 
-    public void onClick(View v)
+
+    private void playMatch2(ImageButton imageButton)
     {
-
-        if(threadBusy){return;}
-
-        if(v.getId() == restartButton.getId() ){msg("reset");resetGame();return;}
-
-        ImageButton imageButton = (ImageButton)v;
-
         if(firstCard == null)
         {
             //Determine which card this imageButton is for.
@@ -506,15 +500,8 @@ public class GameFragment extends Fragment implements View.OnClickListener{
             }
         }
 
-
-
         //If same card is clicked twice, do nothing.  Return.
         if(firstCard.getIdOfImageButton() == secondCard.getIdOfImageButton()){msg("same");secondCard=null;return;}
-
-        //If clicked card is already matched, do nothing.  Return.
-        //if(firstCard.isMatched()){msg("true.  isMatched.");return;}
-
-
 
         //With two different cards selected, test for match.
         if(firstCard.getIdOfPic() == secondCard.getIdOfPic())
@@ -531,16 +518,11 @@ public class GameFragment extends Fragment implements View.OnClickListener{
             firstCard.setShowing(false);
             secondCard.setShowing(false);
 
-            //firstCard.setMatched(true);
-            //secondCard.setMatched(true);
-
             firstCard = null;
             secondCard = null;
         }
         else  //No match is made, so reset the cards.  Flip.  Show cardBack after short delay.
         {
-            long delay = 1000L;
-
             firstCard.setShowing(false);
             secondCard.setShowing(false);
 
@@ -549,19 +531,142 @@ public class GameFragment extends Fragment implements View.OnClickListener{
             Handler handler = new Handler();
             handler.postDelayed(new Runnable(){
 
-                    public void run()
-                    {
-                        //Turn card over.  Show backside of cards.
-                        ((ImageButton)grid.findViewById(firstCard.getIdOfImageButton())).setImageResource(cardBack);
-                        ((ImageButton)grid.findViewById(secondCard.getIdOfImageButton())).setImageResource(cardBack);
+                public void run()
+                {
+                    //Turn card over.  Show backside of cards.
+                    ((ImageButton)grid.findViewById(firstCard.getIdOfImageButton())).setImageResource(cardBack);
+                    ((ImageButton)grid.findViewById(secondCard.getIdOfImageButton())).setImageResource(cardBack);
 
-                        firstCard   = null;
-                        secondCard  = null;
+                    firstCard   = null;
+                    secondCard  = null;
 
-                        threadBusy = false;
-                    }
-             },delay);
+                    threadBusy = false;
+                }
+            },CARD_FLIP_DELAY);
 
+        }
+    }
+
+    private void playMatch3(ImageButton imageButton)
+    {
+        if(firstCard == null)
+        {
+            //Determine which card this imageButton is for.
+            for(int i=0;i<gridSize;i++)
+            {
+                if( ((Card)cards.get(i)).getIdOfImageButton() == imageButton.getId() )
+                {
+                    firstCard = (Card)cards.get(i);
+                    firstCard.setShowing(true);
+                    imageButton.setImageResource(firstCard.getIdOfPic());
+                    return;
+                }
+            }
+        }
+
+        if(secondCard == null)
+        {
+            //Determine which card this imageButton is for.
+            for(int i=0;i<gridSize;i++)
+            {
+                if( ((Card)cards.get(i)).getIdOfImageButton() == imageButton.getId() )
+                {
+                    secondCard = (Card)cards.get(i);
+                    secondCard.setShowing(true);
+                    imageButton.setImageResource(secondCard.getIdOfPic());
+                    return;
+                }
+            }
+        }
+
+        if(thirdCard == null)
+        {
+            //Determine which card this imageButton is for.
+            for(int i=0;i<gridSize;i++)
+            {
+                if( ((Card)cards.get(i)).getIdOfImageButton() == imageButton.getId() )
+                {
+                    thirdCard = (Card)cards.get(i);
+                    thirdCard.setShowing(true);
+                    imageButton.setImageResource(thirdCard.getIdOfPic());
+                    break;
+                }
+            }
+        }
+
+        //If same card is clicked twice, do nothing.  Return.
+        if(firstCard.getIdOfImageButton() == secondCard.getIdOfImageButton()){msg("same");secondCard=null;return;}
+
+
+        if(secondCard.getIdOfImageButton() == thirdCard.getIdOfImageButton()){msg("same");thirdCard=null;return;}
+
+
+        if(thirdCard.getIdOfImageButton() == firstCard.getIdOfImageButton()){msg("same");thirdCard=null;return;}
+
+
+        //With two different cards selected, test for match.
+        if(firstCard.getIdOfPic() == secondCard.getIdOfPic() && (secondCard.getIdOfPic() == thirdCard.getIdOfPic()) )
+        {
+            matchCount++;
+            score += 100;
+
+            msg("match-made");
+
+            //Since a match is made, disable the corresponding buttons in the GridLayout.
+            grid.findViewById(firstCard.getIdOfImageButton()).setEnabled(false);
+            grid.findViewById(secondCard.getIdOfImageButton()).setEnabled(false);
+            grid.findViewById(thirdCard.getIdOfImageButton()).setEnabled(false);
+
+
+            firstCard   = null;
+            secondCard  = null;
+            thirdCard   = null;
+        }
+        else  //No match is made, so reset the cards.  Flip.  Show cardBack after short delay.
+        {
+
+
+            threadBusy = true;
+
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable(){
+
+                public void run()
+                {
+                    //Turn card over.  Show backside of cards.
+                    ((ImageButton)grid.findViewById(firstCard.getIdOfImageButton())).setImageResource(cardBack);
+                    ((ImageButton)grid.findViewById(secondCard.getIdOfImageButton())).setImageResource(cardBack);
+                    ((ImageButton)grid.findViewById(thirdCard.getIdOfImageButton())).setImageResource(cardBack);
+
+                    firstCard   = null;
+                    secondCard  = null;
+                    thirdCard   = null;
+
+                    threadBusy = false;
+                }
+            },CARD_FLIP_DELAY);
+
+        }
+    }
+
+
+    public void onClick(View v)
+    {
+
+        if(threadBusy){return;}
+
+        if(v.getId() == restartButton.getId() ){msg("reset");resetGame();return;}
+
+        ImageButton imageButton = (ImageButton)v;
+
+
+        if(matchType == MATCH_TYPE_2)
+        {
+            playMatch2(imageButton);
+        }
+        else if(matchType == MATCH_TYPE_3)
+        {
+            playMatch3(imageButton);
         }
 
 
@@ -576,14 +681,19 @@ public class GameFragment extends Fragment implements View.OnClickListener{
             //Stops timer at Game Over.
             toggleTimer = false;
 
+            showHighScores();
 
-            HighScoresFragment fragment = HighScoresFragment.newInstance(score);
-            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-            fragmentTransaction.replace(R.id.framelayout, fragment).commit();
         }
 
 
 
+    }
+
+    private void showHighScores()
+    {
+        HighScoresFragment fragment = HighScoresFragment.newInstance(score);
+        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.framelayout, fragment).commit();
     }
 
 
@@ -662,6 +772,8 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
         firstCard   = null;
         secondCard  = null;
+        thirdCard   = null;
+
         threadBusy = false;
 
         score = 0;
