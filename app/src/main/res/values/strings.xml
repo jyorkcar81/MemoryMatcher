@@ -30,7 +30,7 @@
     <string name="about_info">This app was created with Android Studio.</string>
 
 
-    <!-- stat panel at the bottom of the board -->
+    <!-- stat panel at the bottom of the board & Score is used on GameOver Dialog -->
     <string name="match_count">Match Count:</string>
     <string name="score">Score:</string>
     <string name="timer">Time:</string>
@@ -47,10 +47,20 @@
     <string name="name_header">Name</string>
     <string name="score_header">Score</string>
 
+    <!-- High Score collect username -->
+    <string name="name_label">Enter Name:</string>
+
     <!-- Delete DB -->
     <string name="delete_db">Delete All Scores</string>
 
     <!-- Welcome message when app is first displayed -->
     <string name="welcome">Welcome!  Use the menus to get started.</string>
+
+    <!-- GameOver message -->
+    <string name="gameover">Game Over!</string>
+
+    <!-- GO! message -->
+    <string name="go_label">GO!</string>
+
 
 </resources>

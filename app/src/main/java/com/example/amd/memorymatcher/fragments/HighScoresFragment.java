@@ -51,7 +51,7 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
 
     private static int possibleHighScore;//After a game is completed the score is comapred to the entries in the DB.  It's then deteremined a high score or not.
 
-    // All Static variables
+
     // Database Version
     private static final int DATABASE_VERSION = 1;
 
@@ -65,8 +65,6 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
     private static final String SCORE_COLUMN_NAME = "score";
 
     private static final String NAME_COLUMN_NAME = "name";
-
-
 
     private static int MAX_USERNAME_LENGTH=15;//Max_length for userprovided name for recording new high scores.
 
@@ -144,7 +142,7 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
             //If new high score is reached by the game player, then 1.  Get name.  2.  Insert new record in DB.
             UsernameDialogFragment dialog = new UsernameDialogFragment();
 
-            dialog.show(ft, "dialog");
+            dialog.show(ft, "usernamedialog");
 
             v.invalidate();
         }
