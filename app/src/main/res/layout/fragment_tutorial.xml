@@ -10,7 +10,7 @@
     <VideoView
         android:id="@+id/videoView"
         android:layout_width="350dp"
-        android:layout_height="200dp"
+        android:layout_height="250dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginTop="8dp"
@@ -26,6 +26,7 @@
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginTop="8dp"
+        app:backgroundTint="@android:color/background_light"
         android:text="@string/watch_button"
         android:textAllCaps="false"
         app:layout_constraintBottom_toBottomOf="parent"

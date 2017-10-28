@@ -4,6 +4,6 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
 
-    <!-- CUSTOM COLORS -->
-    <color name="myGray">#D0D3D4</color>
+    <!-- MY CUSTOM COLORS -->
+    <color name="myDarkGray">#23444445</color>
 </resources>

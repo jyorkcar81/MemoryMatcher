@@ -2,7 +2,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="@color/myGray"
     android:orientation="vertical">
 
     <TextView
@@ -11,7 +10,8 @@
         android:layout_height="wrap_content"
         android:text="@string/gameover"
         android:textAlignment="center"
-        android:textSize="18sp" />
+        android:textSize="18sp"
+        android:textStyle="bold" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -20,15 +20,16 @@
 
         <TextView
             android:id="@+id/textViewScoreLabel"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/score"
-            android:textAlignment="textEnd" />
+            android:textAlignment="textEnd"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/textViewScore"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:textAlignment="textStart"

@@ -233,10 +233,6 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         grid.setColumnCount(boardColumns);
         grid.setRowCount(boardRows);
 
-
-        //use a waiting thread until this is true.
-
-
         msg("board size:"+board.getNumOfCards());
 
         /*
@@ -428,9 +424,32 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         goDialogFragment.show(ft, "godialog");
     }
 
+
     private void startTimer()
     {
         showGO();
+
+        //Quickly get rid of the goMessage.
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable()
+        {
+            private int count = 2;//Number of seconds to wait.
+            private final long wait = 125L;// 1/4 second total wait.
+
+            public void run()
+            {
+                if(count > 0)
+                {
+                    handler.postDelayed(this, wait);
+                    count--;
+                }
+                else
+                {
+                    goDialogFragment.dismiss();
+                }
+            }
+        },0);
+
 
         //The game is all setup now.  UI is ready.  So, start the timer.
         startTime = SystemClock.uptimeMillis();
@@ -750,7 +769,7 @@ public class GameFragment extends Fragment implements View.OnClickListener{
     private void showHighScores()
     {
         //Wait three seconds, then show the scores.
-        Handler handler = new Handler();
+        final Handler handler = new Handler();
         handler.postDelayed(new Runnable()
         {
             private int count = 5;//Number of seconds to wait.
@@ -760,7 +779,7 @@ public class GameFragment extends Fragment implements View.OnClickListener{
             {
                 if(count > 0)
                 {
-                    timerHandler.postDelayed(this, second);
+                    handler.postDelayed(this, second);
                     count--;
                 }
                 else
@@ -1033,6 +1052,19 @@ public class GameFragment extends Fragment implements View.OnClickListener{
                     .setCancelable(false);
 
             return builder.create();
+        }
+
+        @Override
+        public void onResume()
+        {
+            ViewGroup.LayoutParams params = getDialog().getWindow().getAttributes();
+
+            params.width    = 100;//LayoutParams.WRAP_CONTENT;
+            params.height   = 75;//LayoutParams.WRAP_CONTENT;
+
+            getDialog().getWindow().setAttributes((android.view.WindowManager.LayoutParams) params);
+
+            super.onResume();
         }
     }
 }

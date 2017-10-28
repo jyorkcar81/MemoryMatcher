@@ -223,6 +223,7 @@
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
+        app:backgroundTint="@android:color/background_light"
         android:text="@string/delete_db"
         android:textAllCaps="false"
         app:layout_constraintBottom_toBottomOf="parent"

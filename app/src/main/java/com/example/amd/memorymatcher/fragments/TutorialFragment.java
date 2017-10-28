@@ -1,6 +1,7 @@
 package com.example.amd.memorymatcher.fragments;
 
 import android.content.Context;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -9,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.MediaController;
 import android.widget.VideoView;
 
 import com.example.amd.memorymatcher.R;
@@ -33,6 +35,7 @@ public class TutorialFragment extends Fragment implements View.OnClickListener{
 
     private Button button;
     private VideoView video;
+    private MediaController controller;
 
     private OnFragmentInteractionListener mListener;
 
@@ -76,13 +79,7 @@ public class TutorialFragment extends Fragment implements View.OnClickListener{
         button = (Button)v.findViewById(R.id.buttonWatchVideo);
         video = (VideoView)v.findViewById(R.id.videoView);
 
-        String path = "android.resource://" + inflater.getContext().getPackageName() + "/" + R.raw.s;
-
-        Uri uri = android.net.Uri.parse(path);
-
-        video.setVideoURI(uri);
-Log.d("uri",uri.toString());
-        video.requestFocus();
+        controller = new MediaController(getActivity());
 
         button.setOnClickListener(this);
         return v;
@@ -130,11 +127,29 @@ Log.d("uri",uri.toString());
     //Button listener.
     public void onClick(View v)
     {
+        String path = "android.resource://" + v.getContext().getPackageName() + "/" + R.raw.s;
 
-        //play the video.
-        if(v.getId() == button.getId())
-        {
-            video.start();
-        }
+        Log.d("path",path);
+
+        Uri uri = android.net.Uri.parse(path);
+
+        controller.setAnchorView(video);
+
+        video.setVideoURI(uri);
+        video.setMediaController(controller);
+        video.requestFocus();
+
+        video.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mediaPlayer) {
+
+                //play the video.
+                video.start();
+
+            }
+        });
+
+
+
     }
 }
