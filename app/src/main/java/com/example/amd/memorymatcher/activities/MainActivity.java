@@ -19,6 +19,7 @@ import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.util.Log;
 
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.amd.memorymatcher.R;
@@ -28,7 +29,7 @@ import com.example.amd.memorymatcher.fragments.HighScoresFragment;
 import com.example.amd.memorymatcher.fragments.TutorialFragment;
 
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener{
 
 
     private String title = "";
@@ -51,6 +52,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Button but = (Button)findViewById(R.id.buttonPlay);
+
+        but.setOnClickListener(this);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -197,6 +203,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
+    public void onClick(View v)
+    {
+        title = getString(R.string.two_by_two_title);
+
+        boardRows       =   2;
+        boardColumns    =   2;
+
+        matchType = GameFragment.MATCH_TYPE_2;
+
+        nextFragment = GAME_FRAGMENT;
+
+        setTitle(title);
+
+        //Replace fragment.
+        updateFragment().start();
+    }
 
 
     private Fragment pickFragment()

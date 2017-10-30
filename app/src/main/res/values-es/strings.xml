@@ -62,6 +62,7 @@
 
     <!-- GO! message -->
     <string name="go_label">GO!</string>
+    <string name="play_button">Jugar</string>
 
 
 </resources>
