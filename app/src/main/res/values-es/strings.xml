@@ -1,0 +1,67 @@
+<resources>
+    <string name="app_name">MemoryMatcher</string>
+
+    <string name="navigation_drawer_open">Abrir el cajón de navegación</string>
+    <string name="navigation_drawer_close">Cerrar el cajón de navegación</string>
+
+    <string name="action_settings">Configuraciones</string>
+    <string name="developedBy">Desarrollado por Jed York</string>
+    <string name="emailAddress">jyorkcar@sbcglobal.net</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+
+    <!-- Titles of fragments and activities -->
+    <string name="two_by_two_title">Partido 2</string>
+    <string name="three_by_three_title">Partido 3</string>
+    <string name="four_by_four_title">Partido 2</string>
+    <string name="tutorial_title">Tutorial</string>
+    <string name="highscores_title">Puntajes altos</string>
+    <string name="about_title">Acerca de</string>
+
+    <!-- Navigation Drawer Labels -->
+    <string name="nav_twotwo">2x2</string>
+    <string name="nav_threethree">3x3</string>
+    <string name="nav_fourfour">4x4</string>
+    <string name="nav_tutorial">Tutorial</string>
+    <string name="nav_highscores">Puntajes altos</string>
+    <string name="nav_about">Acerca de</string>
+
+    <!-- Info for About -->
+    <string name="about_info">Esta aplicación fue creada con Android Studio.</string>
+
+
+    <!-- stat panel at the bottom of the board & Score is used on GameOver Dialog -->
+    <string name="match_count">Conteo de partidos:</string>
+    <string name="score">Puntuación:</string>
+    <string name="timer">Hora:</string>
+
+
+    <!-- various button labels -->
+    <string name="restart_button">Reiniciar</string>
+    <string name="watch_button">Mirar</string>
+    <string name="ok_button">bueno</string>
+    <string name="cancel_button">Cancelar</string>
+
+    <!-- High Score Column Headers -->
+    <string name="rank_header">Rango</string>
+    <string name="name_header">Nombre</string>
+    <string name="score_header">Puntuación</string>
+
+    <!-- High Score collect username -->
+    <string name="name_label">Enter Name:</string>
+
+    <!-- Delete DB -->
+    <string name="delete_db">Eliminar todos los puntajes</string>
+
+    <!-- Welcome message when app is first displayed -->
+    <string name="welcome">¡Bienvenido!</string>
+    <string name="intro">Use el menú deslizable a la izquierda para comenzar.</string>
+
+    <!-- GameOver message -->
+    <string name="gameover">¡Juego terminado!</string>
+
+    <!-- GO! message -->
+    <string name="go_label">GO!</string>
+
+
+</resources>

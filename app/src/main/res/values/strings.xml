@@ -1,12 +1,12 @@
 <resources>
-    <string name="app_name">MemoryMatcher</string>
+    <string name="app_name" translatable="false">MemoryMatcher</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
     <string name="developedBy">Developed By Jed York</string>
-    <string name="emailAddress">jyorkcar@sbcglobal.net</string>
+    <string name="emailAddress" translatable="false">jyorkcar@sbcglobal.net</string>
 
     <!-- TODO: Remove or change this placeholder text -->
 

@@ -233,7 +233,6 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         grid.setColumnCount(boardColumns);
         grid.setRowCount(boardRows);
 
-        msg("board size:"+board.getNumOfCards());
 
         /*
                     Cards ---> Grid cells
@@ -564,8 +563,6 @@ public class GameFragment extends Fragment implements View.OnClickListener{
             matchCount++;
             score += 100;
 
-            msg("match-made");
-
             playSound(soundMatch);
 
             //Since a match is made, disable the corresponding buttons in the GridLayout.
@@ -668,8 +665,6 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         {
             matchCount++;
             score += 100;
-
-            msg("match-made");
 
             playSound(soundMatch);
 
@@ -841,6 +836,7 @@ public class GameFragment extends Fragment implements View.OnClickListener{
                         ||tempName.startsWith("navigation_")
                         ||tempName.startsWith("notify_")
                         ||tempName.startsWith("side_")
+                        ||tempName.startsWith("myicon")
                         )
                 {
                     //Do not add these.

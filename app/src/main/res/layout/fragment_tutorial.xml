@@ -26,7 +26,6 @@
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginTop="8dp"
-        app:backgroundTint="@android:color/background_light"
         android:text="@string/watch_button"
         android:textAllCaps="false"
         app:layout_constraintBottom_toBottomOf="parent"

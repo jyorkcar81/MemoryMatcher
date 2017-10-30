@@ -48,9 +48,7 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
     private String name;
     private String rank;
 
-
     private static int possibleHighScore;//After a game is completed the score is comapred to the entries in the DB.  It's then deteremined a high score or not.
-
 
     // Database Version
     private static final int DATABASE_VERSION = 1;
@@ -66,19 +64,20 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
 
     private static final String NAME_COLUMN_NAME = "name";
 
-    private static int MAX_USERNAME_LENGTH=15;//Max_length for userprovided name for recording new high scores.
+    private static int MAX_USERNAME_LENGTH = 15;//Max_length for userprovided name for recording new high scores.
 
     private static SQLiteDatabase db;
     private static Helper dbHelper;
+    private static Cursor cursor;
 
-    private Cursor cursor;
+    private static TableLayout table;
 
     private Button button;
 
     private static String username;
 
-    private TableLayout table;
-    private static final int ROWS_IN_TABLE_LAYOUT=5;//Total number of records (high scores) that will be shown on the screen.
+    //private TableLayout table;
+    private static final int ROWS_IN_TABLE_LAYOUT = 5;//Total number of records (high scores) that will be shown on the screen.
 
     private OnFragmentInteractionListener mListener;
 
@@ -115,7 +114,7 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
 
 
         //FOR TESTING ONLY.  DELETE DB IF ALREADY EXISTS.
-        getActivity().deleteDatabase(DATABASE_NAME);
+        //getActivity().deleteDatabase(DATABASE_NAME);
 
         dbHelper = new Helper(getActivity(),DATABASE_NAME,null,DATABASE_VERSION);
         Log.d("getApplicationContext",""+getActivity());
@@ -136,6 +135,8 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
 
         button.setOnClickListener(this);
 
+        updateTableLayout();
+
         if(isNewHighScore())
         {
             FragmentTransaction ft = getFragmentManager().beginTransaction();
@@ -146,12 +147,6 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
 
             v.invalidate();
         }
-        else
-        {
-
-        }
-
-        updateUI();
 
         return v;
     }
@@ -200,8 +195,16 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
 
 
     //Query the DB for the list of high scores, then display them.
-    private void updateUI()
+    private static void updateTableLayout()
     {
+        TableRow row;
+
+        int i=1;
+
+        String  rank="1",
+                name,
+                score;
+
         db = dbHelper.getReadableDatabase();
 
         Log.d("db",db.toString());
@@ -211,9 +214,18 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
 
         boolean hasRows = cursor.moveToFirst();
 
-        TableRow row;
-        int i=1;
-        String rank="1";
+        //If table in the DB is empty, then show a blank tableLayout.
+        if(!hasRows)
+        {
+            for(int x=1; x<table.getChildCount(); x++)//Note:  row 0 is the headers of the table.
+            {
+                row = (TableRow)table.getChildAt(x);
+
+                ((TextView)row.getChildAt(0)).setText("");
+                ((TextView)row.getChildAt(1)).setText("");
+                ((TextView)row.getChildAt(2)).setText("");
+            }
+        }
 
         while(hasRows)
         {
@@ -229,12 +241,11 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
             Log.d("db_entry_name",name);
 
             rank = Integer.valueOf(Integer.parseInt(rank) + 1).toString();
+
             i++;
 
             hasRows = cursor.moveToNext();
         }
-
-
 
     }
 
@@ -242,15 +253,14 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
     {
         db = dbHelper.getWritableDatabase();
 
-        db.execSQL("DELETE FROM "+TABLE_NAME);
+        db.execSQL("DELETE FROM "+TABLE_NAME);//similar to TRUNCATE TABLE.
 
-        updateUI();
+        updateTableLayout();
     }
 
 
     public boolean isNewHighScore()//Determine if the new score is a high score.
     {
-
         db = dbHelper.getReadableDatabase();
 
         //Query the DB for the list of high scores looking to see if the new score is a high score.
@@ -258,19 +268,25 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
 
         boolean hasRows = cursor.moveToFirst();
 
-        TableRow row;
+        //TableRow row;
         int i=1;
-        String rank="1";
+        String rank="1",name="",score="";
+
+        //If table is empty, then any non-negative & non-zero score is a new high score.
+        if(!hasRows && possibleHighScore >= 1 )
+        {
+            return true;
+        }
 
         while(hasRows)
         {
-            row = (TableRow)table.getChildAt(i);
+           // row = (TableRow)table.getChildAt(i);
 
-            name = cursor.getString(1);
+            //name = cursor.getString(1);
             score = Integer.valueOf(cursor.getInt(2)).toString();
 
             rank = Integer.valueOf(Integer.parseInt(rank) + 1).toString();
-            i++;
+
 
             if(Integer.valueOf(Integer.parseInt(rank)) >= 5)//Check if new score is greater than lowest of the high scores, this is the 5th one.
             {
@@ -281,14 +297,12 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
             }
 
             hasRows = cursor.moveToNext();
-        }
 
+            i++;
+        }
 
         return false;
     }
-
-
-
 
     private void closeDB()
     {
@@ -327,38 +341,36 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
 
             ContentValues cv = new ContentValues();
 
-            cv.put(SCORE_COLUMN_NAME,500);
             cv.put(NAME_COLUMN_NAME,"John N.");
-
+            cv.put(SCORE_COLUMN_NAME,500);
 
             sqLiteDatabase.insert(TABLE_NAME,null,cv);
 
             cv.clear();
 
-            cv.put(SCORE_COLUMN_NAME,1500);
             cv.put(NAME_COLUMN_NAME,"Ash A.");
-
+            cv.put(SCORE_COLUMN_NAME,1500);
 
             sqLiteDatabase.insert(TABLE_NAME,null,cv);
 
             cv.clear();
 
-            cv.put(SCORE_COLUMN_NAME,2300);
             cv.put(NAME_COLUMN_NAME,"Elizabeth B.");
+            cv.put(SCORE_COLUMN_NAME,2300);
 
             sqLiteDatabase.insert(TABLE_NAME,null,cv);
 
             cv.clear();
 
-            cv.put(SCORE_COLUMN_NAME,1400);
             cv.put(NAME_COLUMN_NAME,"Freddyyyyyyy Q.");
+            cv.put(SCORE_COLUMN_NAME,1400);
 
             sqLiteDatabase.insert(TABLE_NAME,null,cv);
 
             cv.clear();
 
-            cv.put(SCORE_COLUMN_NAME,100);
             cv.put(NAME_COLUMN_NAME,"Google Inc.");
+            cv.put(SCORE_COLUMN_NAME,100);
 
             sqLiteDatabase.insert(TABLE_NAME,null,cv);
 
@@ -366,7 +378,7 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
 
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
         {
-            //db.execSQL();//drop tables
+            db.execSQL("DELETE FROM "+TABLE_NAME);//truncate table(s).
             onCreate(db);
         }
 
@@ -396,7 +408,6 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
                         public void onClick(DialogInterface dialog, int id)
                         {
 
-
                             username = text.getText().toString();
 
                             //If usernamer exceeds 15 chars, then it needs to be truncated.
@@ -415,21 +426,22 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
                             {
                                 ContentValues cv = new ContentValues();
 
-                                cv.put(SCORE_COLUMN_NAME,possibleHighScore);
                                 cv.put(NAME_COLUMN_NAME,username);
+                                cv.put(SCORE_COLUMN_NAME,possibleHighScore);
 
                                 Log.d("possibleHigh",possibleHighScore+"");
                                 Log.d("uname",username);
 
                                 //Database may need to be opened and writable to make the insert.
-                                if( !db.isOpen() || db.isReadOnly() )
-                                {
-                                    db = dbHelper.getWritableDatabase();
-                                }
+
+                                db = dbHelper.getWritableDatabase();
 
                                 db.insert(TABLE_NAME,null,cv);
 
+                                updateTableLayout();
+
                                 cv.clear();
+                                possibleHighScore = -1;//wipe out the possibleHighScore to prevent it persisting.
                             }
 
                         }
