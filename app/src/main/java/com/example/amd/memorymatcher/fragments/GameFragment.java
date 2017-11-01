@@ -977,7 +977,8 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
     private void playSound(MediaPlayer sound)
     {
-        sound.stop();
+        try{sound.prepare();}
+        catch(Exception e){Log.e("prepfail",e.toString());}
         sound.start();
     }
 
@@ -1002,6 +1003,12 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         soundMatch.release();
         soundMusic1.release();
         soundWin1.release();
+
+        soundTap1   = null;
+        soundTap2   = null;
+        soundMatch  = null;
+        soundMusic1 = null;
+        soundWin1   = null;
     }
 
 
