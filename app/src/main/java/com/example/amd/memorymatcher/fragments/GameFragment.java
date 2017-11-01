@@ -977,9 +977,37 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
     private void playSound(MediaPlayer sound)
     {
-        try{sound.prepare();}
-        catch(Exception e){Log.e("prepfail",e.toString());}
-        sound.start();
+
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable()
+        {
+
+            public void run()
+            {
+               final MediaPlayer s = MediaPlayer.create(getActivity(),R.raw.c1);
+
+
+                    s.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                        @Override
+                        public void onPrepared(MediaPlayer mediaPlayer)
+                        {
+                            try
+                            {
+                                s.start();
+                            }
+                            catch(Exception e)
+                            {
+                                Log.e("prepfail",e.toString());
+                            }
+
+
+                        }
+
+                    });
+
+            }
+        },0);
+
     }
 
     private void stopSound(MediaPlayer sound)//Stop playing the sound.
