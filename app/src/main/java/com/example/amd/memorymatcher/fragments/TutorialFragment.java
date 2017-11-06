@@ -127,7 +127,7 @@ public class TutorialFragment extends Fragment implements View.OnClickListener{
     //Button listener.
     public void onClick(View v)
     {
-        String path = "android.resource://" + v.getContext().getPackageName() + "/" + R.raw.s;
+        String path = "android.resource://" + v.getContext().getPackageName() + "/" + R.raw.test1;
 
         Log.d("path",path);
 
@@ -135,6 +135,7 @@ public class TutorialFragment extends Fragment implements View.OnClickListener{
 
         controller.setAnchorView(video);
 
+        video.setZOrderOnTop(true);
         video.setVideoURI(uri);
         video.setMediaController(controller);
         video.requestFocus();

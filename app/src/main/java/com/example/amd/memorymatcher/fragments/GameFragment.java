@@ -8,12 +8,17 @@ import android.app.FragmentTransaction;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.content.res.AssetFileDescriptor;
+import android.content.res.Configuration;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.drawable.Drawable;
+import android.media.AudioManager;
 import android.media.Image;
 import android.media.MediaPlayer;
+import android.media.SoundPool;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -106,14 +111,13 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
     private int totalMatchesAvailable;
 
+    private boolean isLargeScreenDevice;
 
     private Handler timerHandler;
 
     private static  int score;
 
     private int matchCount;//Total matches made.
-
-
 
     private boolean threadBusy;
 
@@ -132,6 +136,9 @@ public class GameFragment extends Fragment implements View.OnClickListener{
                         soundMatch,
                         soundMusic1,
                         soundWin1;
+
+    private SharedPreferences saved;//Retain certain values to preserve game-state when orientation of device changes.
+    private SharedPreferences.Editor editor;
 
     public GameFragment() {
         // Required empty public constructor
@@ -158,7 +165,8 @@ public class GameFragment extends Fragment implements View.OnClickListener{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
+        if (getArguments() != null)
+        {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
             boardRows = getArguments().getInt("boardRows");
@@ -167,14 +175,17 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
         }
 
+
         //msg("board dimensions: "+boardRows+"x"+boardColumns);
         //msg("matchType: "+matchType);
 
         soundTap1   = MediaPlayer.create(getActivity(),R.raw.c1);
-        soundTap2   = MediaPlayer.create(getActivity(),R.raw.c2);
+        soundTap2   = MediaPlayer.create(getActivity(),R.raw.c3);
         soundMatch  = MediaPlayer.create(getActivity(),R.raw.c3);
         soundMusic1 = MediaPlayer.create(getActivity(),R.raw.m1);
         soundWin1   = MediaPlayer.create(getActivity(),R.raw.w1);
+
+
 
        playSound(soundMusic1);
 
@@ -196,29 +207,48 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         toggleTimer = true;
 
         drawableIds = getAllDrawableId();
-    }
 
-    /*
-    public void onViewCreated(View view, Bundle savedInstanceState)
-    {
-        super.onViewCreated( view,  savedInstanceState);
 
-        GridLayout grid = (GridLayout)(getActivity().findViewById(R.layout.two_by_two).findViewById(R.id.twoByTwoGridLayout));
-        Log.d("grid",grid+"");
+
+
+
+
+
+
+
+        cardBack = getCardBackImage();
     }
-*/
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
+Toast.makeText(inflater.getContext(),"View created",Toast.LENGTH_LONG).show();
         int idOfImageButton,
             idOfPic;
 
         ImageButton button,
                     temp;
 
+
+
         // Inflate the layout for this fragment.  i.e. get xml to dynamically add buttons to build the ui
-        View v = inflater.inflate(R.layout.fragment_game, container, false);
+        View v = null;
+
+        Configuration config = getResources().getConfiguration();
+
+        if (config.smallestScreenWidthDp >= 600) //7" tablets or larger screens
+        {
+            isLargeScreenDevice = true;
+            v = inflater.inflate(R.layout.fragment_game_large_screen, container, false);
+
+        }
+        else
+        {
+            isLargeScreenDevice = false;
+            v = inflater.inflate(R.layout.fragment_game, container, false);
+
+        }
+
+
         grid = (GridLayout)v.findViewById(R.id.twoByTwoGridLayout);
 
         tvScore         = (TextView)v.findViewById(R.id.textViewScore);
@@ -242,12 +272,94 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
         */
 
+        Context context = inflater.getContext();
+        ViewGroup.LayoutParams size = new ViewGroup.LayoutParams(0,0);
+
         for(int i=0; i < gridSize; i++)
         {
-            Context context = inflater.getContext();
             temp = new ImageButton(context);
             temp.setScaleType(ImageView.ScaleType.FIT_XY);
-            temp.setLayoutParams(new ViewGroup.LayoutParams(100,100));
+
+
+            int landPortrait = config.orientation;
+
+            if(isLargeScreenDevice)
+            {
+                if(landPortrait == Configuration.ORIENTATION_PORTRAIT)
+                {
+                    size.height = getResources().getDimensionPixelSize(R.dimen.imageSize100);
+                    size.width = getResources().getDimensionPixelSize(R.dimen.imageSize100);
+
+                    /* only issue here is 4x8 does not fit */
+                }
+                else if (landPortrait == Configuration.ORIENTATION_LANDSCAPE)
+                {
+                    if (boardRows == 6 && boardColumns == 6)
+                    {
+                        size.height = getResources().getDimensionPixelSize(R.dimen.imageSize75);
+                        size.width = getResources().getDimensionPixelSize(R.dimen.imageSize75);
+                    }
+                    else
+                    {
+                        //default values.
+                        size.height = getResources().getDimensionPixelSize(R.dimen.imageSize125);
+                        size.width = getResources().getDimensionPixelSize(R.dimen.imageSize125);
+                    }
+                }
+                else if (landPortrait == Configuration.ORIENTATION_UNDEFINED)
+                {
+                    //untested orientation.
+                    size.height = getResources().getDimensionPixelSize(R.dimen.imageSize100);
+                    size.width = getResources().getDimensionPixelSize(R.dimen.imageSize100);
+                }
+
+  /*              //Adjust size of cards based on number of cards shown and screen size used.
+                if (boardRows == 2 && boardColumns == 2)
+                {
+                    size.height = getResources().getDimensionPixelSize(R.dimen.imageSize125);
+                    size.width = getResources().getDimensionPixelSize(R.dimen.imageSize125);
+                } else if (boardRows == 3 && boardColumns == 3)
+                {
+                    size.height = getResources().getDimensionPixelSize(R.dimen.imageSize125);
+                    size.width = getResources().getDimensionPixelSize(R.dimen.imageSize125);
+                } else if (boardRows == 4 && boardColumns == 4)
+                {
+                    size.height = getResources().getDimensionPixelSize(R.dimen.imageSize100);
+                    size.width = getResources().getDimensionPixelSize(R.dimen.imageSize100);
+                } else if (boardRows == 4 && boardColumns == 8)
+                {
+                    size.height = getResources().getDimensionPixelSize(R.dimen.imageSize100);
+                    size.width = getResources().getDimensionPixelSize(R.dimen.imageSize100);
+                } else if (boardRows == 6 && boardColumns == 6)
+                {
+                    size.height = getResources().getDimensionPixelSize(R.dimen.imageSize75);
+                    size.width = getResources().getDimensionPixelSize(R.dimen.imageSize75);
+                } else {
+                    //default values.
+                    size.height = getResources().getDimensionPixelSize(R.dimen.imageSize100);
+                    size.width = getResources().getDimensionPixelSize(R.dimen.imageSize100);
+                }
+*/
+        }
+        else//Small screen. e.g.  Phone.
+        {
+            size.height = getResources().getDimensionPixelSize(R.dimen.imageSize75);
+            size.width = getResources().getDimensionPixelSize(R.dimen.imageSize75);
+
+                if(landPortrait == Configuration.ORIENTATION_LANDSCAPE)
+                {
+                    if (boardRows == 4 && boardColumns == 4)
+                    {
+                        size.height = getResources().getDimensionPixelSize(R.dimen.imageSize60);
+                        size.width = getResources().getDimensionPixelSize(R.dimen.imageSize60);
+                    }
+                }
+        }
+
+
+
+            temp.setLayoutParams(size);
+
             temp.setId(View.generateViewId());
 
             grid.addView(temp);
@@ -259,7 +371,7 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
         //Initialize the Card list.
 
-        cardBack = getCardBackImage();
+
 
         ArrayList<Card> tempList = new ArrayList<Card>();
 
@@ -394,6 +506,21 @@ public class GameFragment extends Fragment implements View.OnClickListener{
     {
 //        stopAllSounds();
  //       releaseAll();
+
+        saved = getActivity().getPreferences(Context.MODE_PRIVATE);
+        editor = saved.edit();
+
+        editor.putInt("",boardColumns);
+        editor.putInt("",boardRows);
+        editor.putInt("",matchType);
+        editor.putInt("",score);
+
+        editor.putBoolean("",isLargeScreenDevice);
+
+        editor.putFloat("",updateTime);
+
+        editor.commit();
+
         super.onPause();
     }
 
@@ -984,26 +1111,20 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
             public void run()
             {
-               final MediaPlayer s = MediaPlayer.create(getActivity(),R.raw.c1);
+                final SoundPool sp = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
 
+                /** soundId for Later handling of sound pool **/
+                final int soundId = sp.load(getActivity(), R.raw.w1, 1);
 
-                    s.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                        @Override
-                        public void onPrepared(MediaPlayer mediaPlayer)
-                        {
-                            try
-                            {
-                                s.start();
-                            }
-                            catch(Exception e)
-                            {
-                                Log.e("prepfail",e.toString());
-                            }
+                sp.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
+                    @Override
+                    public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
+                        sp.play(soundId, 1, 1, 0, 0, 1);
+                    }
+                });
 
+sp.release();
 
-                        }
-
-                    });
 
             }
         },0);

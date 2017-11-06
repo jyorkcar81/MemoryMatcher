@@ -5,6 +5,7 @@
     <group
         android:id="@+id/menuMain"
         android:checkableBehavior="none">
+
         <item
             android:id="@+id/nav_2by2"
 
@@ -17,7 +18,21 @@
             android:id="@+id/nav_4by4"
 
             android:title="@string/nav_fourfour" />
+        <item
+            android:id="@+id/nav_4by5"
 
+            android:title="@string/nav_fourfive"
+            android:visible="false" />
+        <item
+            android:id="@+id/nav_4by8"
+
+            android:title="@string/nav_eightfour"
+            android:visible="false" />
+        <item
+            android:id="@+id/nav_6by6"
+
+            android:title="@string/nav_sixsix"
+            android:visible="false" />
         <item
             android:id="@+id/nav_tutorial"
 

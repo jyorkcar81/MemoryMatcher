@@ -22,6 +22,9 @@
     <string name="nav_twotwo">2x2</string>
     <string name="nav_threethree">3x3</string>
     <string name="nav_fourfour">4x4</string>
+    <string name="nav_fourfive">4x5</string>
+    <string name="nav_eightfour">4x8</string>
+    <string name="nav_sixsix">6x6</string>
     <string name="nav_tutorial">Tutorial</string>
     <string name="nav_highscores">High Scores</string>
     <string name="nav_about">About</string>
@@ -64,6 +67,7 @@
     <!-- GO! message -->
     <string name="go_label">GO!</string>
     <string name="play_button">Play</string>
+
 
 
 </resources>

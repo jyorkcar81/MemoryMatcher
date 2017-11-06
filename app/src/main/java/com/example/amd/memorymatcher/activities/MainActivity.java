@@ -31,6 +31,7 @@ import com.example.amd.memorymatcher.fragments.TutorialFragment;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener{
 
+    public static boolean IS_LARGE_SCREEN_DEVICE;//Determine if small screen or large screen is used.
 
     private String title = "";
 
@@ -48,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 matchType;//2 is a pair, 3, 4... whatever
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,8 +62,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        /*fab.setOnClickListener(new View.OnClickListener() {
+         /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+       fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
@@ -69,13 +71,44 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });*/
 
+
+
+        //Show/hide the menuItem for 8x4 game depending on screen size used.
+        Configuration config = getResources().getConfiguration();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        Menu menu = navigationView.getMenu();
+        MenuItem item4by8 = menu.findItem(R.id.nav_4by8);
+        MenuItem item6by6 = menu.findItem(R.id.nav_6by6);
+        MenuItem item4by5 = menu.findItem(R.id.nav_4by5);
+
+        //Check for 7" screen devices.  This will allow the UI to adjust to these larger screens else "phone-sized" layouts will be used.
+        if (config.smallestScreenWidthDp >= 600)
+        {
+            IS_LARGE_SCREEN_DEVICE = true;
+
+            item4by8.setVisible(true);
+            item6by6.setVisible(true);
+            item4by5.setVisible(true);
+        }
+        else
+        {
+            IS_LARGE_SCREEN_DEVICE = false;
+
+            item4by8.setVisible(false);
+            item6by6.setVisible(false);
+            item4by5.setVisible(false);
+        }
+
+
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+
         navigationView.setNavigationItemSelectedListener(this);
 
     }
@@ -158,6 +191,41 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             nextFragment = GAME_FRAGMENT;
 
+        }
+        else if (id == R.id.nav_4by5)//fits small screen landscape orientations.
+        {
+            title = getString(R.string.four_by_four_title);
+
+            boardRows       =   4;
+            boardColumns    =   5;
+
+            matchType = GameFragment.MATCH_TYPE_2;
+
+            nextFragment = GAME_FRAGMENT;
+
+        }
+        else if (id == R.id.nav_4by8)
+        {
+            title = getString(R.string.four_by_four_title);
+
+            boardRows       =   4;
+            boardColumns    =   8;
+
+            matchType = GameFragment.MATCH_TYPE_2;
+
+            nextFragment = GAME_FRAGMENT;
+
+        }
+        else if (id == R.id.nav_6by6)
+        {
+            title = getString(R.string.four_by_four_title);
+
+            boardRows       =   6;
+            boardColumns    =   6;
+
+            matchType = GameFragment.MATCH_TYPE_2;
+
+            nextFragment = GAME_FRAGMENT;
 
         }
         else if (id == R.id.nav_tutorial)
