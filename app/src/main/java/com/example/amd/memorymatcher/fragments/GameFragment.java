@@ -140,6 +140,8 @@ public class GameFragment extends Fragment implements View.OnClickListener{
     private SharedPreferences saved;//Retain certain values to preserve game-state when orientation of device changes.
     private SharedPreferences.Editor editor;
 
+    ArrayList<Card> tempList;
+
     public GameFragment() {
         // Required empty public constructor
     }
@@ -215,15 +217,16 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
 
 
-
+        tempList = new ArrayList<Card>();
         cardBack = getCardBackImage();
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 Toast.makeText(inflater.getContext(),"View created",Toast.LENGTH_LONG).show();
-        int idOfImageButton,
-            idOfPic;
+        int idOfImageButton;
+
 
         ImageButton button,
                     temp;
@@ -373,35 +376,9 @@ Toast.makeText(inflater.getContext(),"View created",Toast.LENGTH_LONG).show();
 
 
 
-        ArrayList<Card> tempList = new ArrayList<Card>();
 
-        if(matchType == MATCH_TYPE_2)//pair-matching
-        {
-            for(int i=0; i < gridSize ; i+=2)
-            {
-                idOfPic = chooseImage();
 
-                tempList.add(new Card(idOfPic));
-                tempList.add(new Card(idOfPic));
-            }
-        }
-        else if(matchType == MATCH_TYPE_3)//triple-matching
-        {
-            for(int i=0; i < gridSize ; i+=3)
-            {
-                idOfPic = chooseImage();
-
-                tempList.add(new Card(idOfPic));
-                tempList.add(new Card(idOfPic));
-                tempList.add(new Card(idOfPic));
-            }
-        }
-        else
-        {
-            //Major problem and should be unreachable.
-        }
-
-        java.util.Collections.shuffle(tempList);
+        choosePictures();
 
         for(int i=0;i<gridSize;i++)
         {
@@ -607,6 +584,39 @@ Toast.makeText(inflater.getContext(),"View created",Toast.LENGTH_LONG).show();
             }
         },0);
 
+    }
+
+    private void choosePictures()
+    {
+        int idOfPic;
+
+        if(matchType == MATCH_TYPE_2)//pair-matching
+        {
+            for(int i=0; i < gridSize ; i+=2)
+            {
+                idOfPic = chooseImage();
+
+                tempList.add(new Card(idOfPic));
+                tempList.add(new Card(idOfPic));
+            }
+        }
+        else if(matchType == MATCH_TYPE_3)//triple-matching
+        {
+            for(int i=0; i < gridSize ; i+=3)
+            {
+                idOfPic = chooseImage();
+
+                tempList.add(new Card(idOfPic));
+                tempList.add(new Card(idOfPic));
+                tempList.add(new Card(idOfPic));
+            }
+        }
+        else
+        {
+            //Major problem and should be unreachable.
+        }
+
+        java.util.Collections.shuffle(tempList);
     }
 
     private void updateStats()
