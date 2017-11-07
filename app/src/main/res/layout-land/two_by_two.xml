@@ -133,7 +133,8 @@
         app:layout_constraintRight_toLeftOf="@+id/twoByTwoGridLayout"
         android:layout_marginRight="8dp"
         app:layout_constraintHorizontal_bias="0.571"
-        app:layout_constraintVertical_bias="0.927" />
+        app:layout_constraintVertical_bias="0.927"
+        tools:ignore="RtlHardcoded" />
 
 </android.support.constraint.ConstraintLayout>
 

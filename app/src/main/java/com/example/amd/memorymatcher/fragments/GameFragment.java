@@ -283,31 +283,58 @@ Toast.makeText(inflater.getContext(),"View created",Toast.LENGTH_LONG).show();
             temp = new ImageButton(context);
             temp.setScaleType(ImageView.ScaleType.FIT_XY);
 
-
             int landPortrait = config.orientation;
 
             if(isLargeScreenDevice)
             {
                 if(landPortrait == Configuration.ORIENTATION_PORTRAIT)
                 {
-                    size.height = getResources().getDimensionPixelSize(R.dimen.imageSize100);
-                    size.width = getResources().getDimensionPixelSize(R.dimen.imageSize100);
-
-                    /* only issue here is 4x8 does not fit */
-                }
-                else if (landPortrait == Configuration.ORIENTATION_LANDSCAPE)
-                {
-                    if (boardRows == 6 && boardColumns == 6)
+                    if(boardRows == 2 && boardColumns == 2)
+                    {
+                        size.height = getResources().getDimensionPixelSize(R.dimen.imageSize200);
+                        size.width = getResources().getDimensionPixelSize(R.dimen.imageSize200);
+                    }
+                    else if (boardRows == 3 && boardColumns == 3)
+                    {
+                        size.height = getResources().getDimensionPixelSize(R.dimen.imageSize150);
+                        size.width = getResources().getDimensionPixelSize(R.dimen.imageSize150);
+                    }
+                    else if (boardRows == 6 && boardColumns == 6)
                     {
                         size.height = getResources().getDimensionPixelSize(R.dimen.imageSize75);
                         size.width = getResources().getDimensionPixelSize(R.dimen.imageSize75);
                     }
                     else
                     {
-                        //default values.
-                        size.height = getResources().getDimensionPixelSize(R.dimen.imageSize125);
-                        size.width = getResources().getDimensionPixelSize(R.dimen.imageSize125);
+                        size.height = getResources().getDimensionPixelSize(R.dimen.imageSize100);
+                        size.width = getResources().getDimensionPixelSize(R.dimen.imageSize100);
                     }
+
+                    /* only issue here is 4x8 does not fit */
+                }
+                else if (landPortrait == Configuration.ORIENTATION_LANDSCAPE)
+                {
+                    if(boardRows == 2 && boardColumns == 2)
+                    {
+                        size.height = getResources().getDimensionPixelSize(R.dimen.imageSize200);
+                        size.width = getResources().getDimensionPixelSize(R.dimen.imageSize200);
+                    }
+                    else if (boardRows == 3 && boardColumns == 3)
+                    {
+                        size.height = getResources().getDimensionPixelSize(R.dimen.imageSize150);
+                        size.width = getResources().getDimensionPixelSize(R.dimen.imageSize150);
+                    }
+                    else if (boardRows == 6 && boardColumns == 6)
+                    {
+                        size.height = getResources().getDimensionPixelSize(R.dimen.imageSize75);
+                        size.width = getResources().getDimensionPixelSize(R.dimen.imageSize75);
+                    }
+                    else
+                    {
+                        size.height = getResources().getDimensionPixelSize(R.dimen.imageSize100);
+                        size.width = getResources().getDimensionPixelSize(R.dimen.imageSize100);
+                    }
+
                 }
                 else if (landPortrait == Configuration.ORIENTATION_UNDEFINED)
                 {
@@ -316,36 +343,11 @@ Toast.makeText(inflater.getContext(),"View created",Toast.LENGTH_LONG).show();
                     size.width = getResources().getDimensionPixelSize(R.dimen.imageSize100);
                 }
 
-  /*              //Adjust size of cards based on number of cards shown and screen size used.
-                if (boardRows == 2 && boardColumns == 2)
-                {
-                    size.height = getResources().getDimensionPixelSize(R.dimen.imageSize125);
-                    size.width = getResources().getDimensionPixelSize(R.dimen.imageSize125);
-                } else if (boardRows == 3 && boardColumns == 3)
-                {
-                    size.height = getResources().getDimensionPixelSize(R.dimen.imageSize125);
-                    size.width = getResources().getDimensionPixelSize(R.dimen.imageSize125);
-                } else if (boardRows == 4 && boardColumns == 4)
-                {
-                    size.height = getResources().getDimensionPixelSize(R.dimen.imageSize100);
-                    size.width = getResources().getDimensionPixelSize(R.dimen.imageSize100);
-                } else if (boardRows == 4 && boardColumns == 8)
-                {
-                    size.height = getResources().getDimensionPixelSize(R.dimen.imageSize100);
-                    size.width = getResources().getDimensionPixelSize(R.dimen.imageSize100);
-                } else if (boardRows == 6 && boardColumns == 6)
-                {
-                    size.height = getResources().getDimensionPixelSize(R.dimen.imageSize75);
-                    size.width = getResources().getDimensionPixelSize(R.dimen.imageSize75);
-                } else {
-                    //default values.
-                    size.height = getResources().getDimensionPixelSize(R.dimen.imageSize100);
-                    size.width = getResources().getDimensionPixelSize(R.dimen.imageSize100);
-                }
-*/
+                //Adjust size of cards based on number of cards shown and screen size used.
         }
         else//Small screen. e.g.  Phone.
         {
+            //Defaults.
             size.height = getResources().getDimensionPixelSize(R.dimen.imageSize75);
             size.width = getResources().getDimensionPixelSize(R.dimen.imageSize75);
 
@@ -374,10 +376,6 @@ Toast.makeText(inflater.getContext(),"View created",Toast.LENGTH_LONG).show();
 
         //Initialize the Card list.
 
-
-
-
-
         choosePictures();
 
         for(int i=0;i<gridSize;i++)
@@ -393,13 +391,13 @@ Toast.makeText(inflater.getContext(),"View created",Toast.LENGTH_LONG).show();
 
 
         //Show list of cards in log for debugging.
-        for(int i=0;i<tempList.size();i++)
+/*        for(int i=0;i<tempList.size();i++)
         {
             Card c = tempList.get(i);
             String s = "id_button="+c.getIdOfImageButton()+" id_pic="+c.getIdOfPic();
             Log.d("temp cards====",s);
         }
-
+*/
 
         cards = tempList;
         Log.d("address",""+cards);
