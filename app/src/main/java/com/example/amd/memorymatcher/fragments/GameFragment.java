@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.ContentValues;
 import android.content.Context;
@@ -224,14 +225,11 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-Toast.makeText(inflater.getContext(),"View created",Toast.LENGTH_LONG).show();
-        int idOfImageButton;
 
+        int idOfImageButton;
 
         ImageButton button,
                     temp;
-
-
 
         // Inflate the layout for this fragment.  i.e. get xml to dynamically add buttons to build the ui
         View v = null;
@@ -250,7 +248,6 @@ Toast.makeText(inflater.getContext(),"View created",Toast.LENGTH_LONG).show();
             v = inflater.inflate(R.layout.fragment_game, container, false);
 
         }
-
 
         grid = (GridLayout)v.findViewById(R.id.twoByTwoGridLayout);
 
@@ -298,6 +295,11 @@ Toast.makeText(inflater.getContext(),"View created",Toast.LENGTH_LONG).show();
                     {
                         size.height = getResources().getDimensionPixelSize(R.dimen.imageSize150);
                         size.width = getResources().getDimensionPixelSize(R.dimen.imageSize150);
+                    }
+                    else if (boardRows == 4 && boardColumns == 4)
+                    {
+                        size.height = getResources().getDimensionPixelSize(R.dimen.imageSize125);
+                        size.width = getResources().getDimensionPixelSize(R.dimen.imageSize125);
                     }
                     else if (boardRows == 6 && boardColumns == 6)
                     {
@@ -490,15 +492,26 @@ Toast.makeText(inflater.getContext(),"View created",Toast.LENGTH_LONG).show();
         editor.putInt("",matchType);
         editor.putInt("",score);
 
-        editor.putBoolean("",isLargeScreenDevice);
+
+editor.putLong("",millisecondsTime);
+        editor.putLong("",minutesTime);
+        editor.putLong("",secondsTime);
 
         editor.putFloat("",updateTime);
 
         editor.commit();
 
+
+
         super.onPause();
     }
 
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        //do stuf
+    }
 
     /**
      * This interface must be implemented by activities that contain this
@@ -1227,4 +1240,6 @@ sp.release();
             super.onResume();
         }
     }
+
+
 }
