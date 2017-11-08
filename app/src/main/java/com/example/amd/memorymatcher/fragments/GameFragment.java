@@ -230,7 +230,7 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
         ImageButton button,
                     temp;
-
+        setRetainInstance(true);
         // Inflate the layout for this fragment.  i.e. get xml to dynamically add buttons to build the ui
         View v = null;
 
@@ -369,7 +369,7 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
             temp.setId(View.generateViewId());
 
-            grid.addView(temp);
+            if(grid!=null)grid.addView(temp);
         }
 
         initListeners();
