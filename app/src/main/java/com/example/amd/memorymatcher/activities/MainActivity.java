@@ -4,8 +4,6 @@ package com.example.amd.memorymatcher.activities;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -87,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         {
             IS_LARGE_SCREEN_DEVICE = true;
 
-            item4by8.setVisible(true);
+            item4by8.setVisible(false);//Disable this option until resolved.  Possibly temporarily lock orientation.
             item6by6.setVisible(true);
             item4by5.setVisible(true);
         }
@@ -291,7 +289,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private Fragment pickFragment()
     {
-        Log.d("nextFragment=",nextFragment+"");
+        //Log.d("nextFragment=",nextFragment+"");
         switch (nextFragment)
         {
             case GAME_FRAGMENT:

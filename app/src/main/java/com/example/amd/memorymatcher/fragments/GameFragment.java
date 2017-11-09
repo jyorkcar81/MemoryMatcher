@@ -94,9 +94,10 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
     private ArrayList drawableIds;
 
-    private int gridSize,//Number of cells in the grid.
-                boardRows,//Number of rows in the boardgame.
-                boardColumns;//Number of columns in the boardgame.
+    private int gridSize,       //Number of cells in the grid.
+                boardRows,      //Number of rows in the boardgame.
+                boardColumns,   //Number of columns in the boardgame.
+                background;     //Randomly chosen background.
 
     private long startTime,
                 endTime,
@@ -112,7 +113,8 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
     private int totalMatchesAvailable;
 
-    private boolean isLargeScreenDevice;
+    private boolean isLargeScreenDevice,
+                    isRestoredState;    //Used for determining if Fragment already exists, i.e.  user has changed orientations.
 
     private Handler timerHandler;
 
@@ -182,15 +184,16 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         //msg("board dimensions: "+boardRows+"x"+boardColumns);
         //msg("matchType: "+matchType);
 
+        /*
         soundTap1   = MediaPlayer.create(getActivity(),R.raw.c1);
         soundTap2   = MediaPlayer.create(getActivity(),R.raw.c3);
         soundMatch  = MediaPlayer.create(getActivity(),R.raw.c3);
         soundMusic1 = MediaPlayer.create(getActivity(),R.raw.m1);
         soundWin1   = MediaPlayer.create(getActivity(),R.raw.w1);
+        */
 
 
 
-       playSound(soundMusic1);
 
         board = new Board(boardRows,boardColumns,matchType);
         boardSize = board.getNumOfCards();
@@ -219,18 +222,24 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
 
         tempList = new ArrayList<Card>();
+
         cardBack = getCardBackImage();
 
+        background = getBackground();
+
+        isRestoredState = false;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
+        //setRetainInstance(true);
+
         int idOfImageButton;
 
         ImageButton button,
                     temp;
-        setRetainInstance(true);
+
         // Inflate the layout for this fragment.  i.e. get xml to dynamically add buttons to build the ui
         View v = null;
 
@@ -273,123 +282,59 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         */
 
         Context context = inflater.getContext();
-        ViewGroup.LayoutParams size = new ViewGroup.LayoutParams(0,0);
+        ViewGroup.LayoutParams size = determineSize(config);
 
-        for(int i=0; i < gridSize; i++)
+        if(isRestoredState)
         {
-            temp = new ImageButton(context);
-            temp.setScaleType(ImageView.ScaleType.FIT_XY);
+            //Get pre-existing values.  Score, Time, Matches made, all cards used, and whether they are displayed or not.
+        }
+        else
+        {
 
-            int landPortrait = config.orientation;
 
-            if(isLargeScreenDevice)
+            for(int i=0; i < gridSize; i++)
             {
-                if(landPortrait == Configuration.ORIENTATION_PORTRAIT)
-                {
-                    if(boardRows == 2 && boardColumns == 2)
-                    {
-                        size.height = getResources().getDimensionPixelSize(R.dimen.imageSize200);
-                        size.width = getResources().getDimensionPixelSize(R.dimen.imageSize200);
-                    }
-                    else if (boardRows == 3 && boardColumns == 3)
-                    {
-                        size.height = getResources().getDimensionPixelSize(R.dimen.imageSize150);
-                        size.width = getResources().getDimensionPixelSize(R.dimen.imageSize150);
-                    }
-                    else if (boardRows == 4 && boardColumns == 4)
-                    {
-                        size.height = getResources().getDimensionPixelSize(R.dimen.imageSize125);
-                        size.width = getResources().getDimensionPixelSize(R.dimen.imageSize125);
-                    }
-                    else if (boardRows == 6 && boardColumns == 6)
-                    {
-                        size.height = getResources().getDimensionPixelSize(R.dimen.imageSize75);
-                        size.width = getResources().getDimensionPixelSize(R.dimen.imageSize75);
-                    }
-                    else
-                    {
-                        size.height = getResources().getDimensionPixelSize(R.dimen.imageSize100);
-                        size.width = getResources().getDimensionPixelSize(R.dimen.imageSize100);
-                    }
+                temp = new ImageButton(context);
+                temp.setScaleType(ImageView.ScaleType.FIT_XY);
 
-                    /* only issue here is 4x8 does not fit */
-                }
-                else if (landPortrait == Configuration.ORIENTATION_LANDSCAPE)
-                {
-                    if(boardRows == 2 && boardColumns == 2)
-                    {
-                        size.height = getResources().getDimensionPixelSize(R.dimen.imageSize200);
-                        size.width = getResources().getDimensionPixelSize(R.dimen.imageSize200);
-                    }
-                    else if (boardRows == 3 && boardColumns == 3)
-                    {
-                        size.height = getResources().getDimensionPixelSize(R.dimen.imageSize150);
-                        size.width = getResources().getDimensionPixelSize(R.dimen.imageSize150);
-                    }
-                    else if (boardRows == 6 && boardColumns == 6)
-                    {
-                        size.height = getResources().getDimensionPixelSize(R.dimen.imageSize75);
-                        size.width = getResources().getDimensionPixelSize(R.dimen.imageSize75);
-                    }
-                    else
-                    {
-                        size.height = getResources().getDimensionPixelSize(R.dimen.imageSize100);
-                        size.width = getResources().getDimensionPixelSize(R.dimen.imageSize100);
-                    }
+                temp.setLayoutParams(size);
 
-                }
-                else if (landPortrait == Configuration.ORIENTATION_UNDEFINED)
-                {
-                    //untested orientation.
-                    size.height = getResources().getDimensionPixelSize(R.dimen.imageSize100);
-                    size.width = getResources().getDimensionPixelSize(R.dimen.imageSize100);
-                }
+                temp.setId(View.generateViewId());
 
-                //Adjust size of cards based on number of cards shown and screen size used.
-        }
-        else//Small screen. e.g.  Phone.
-        {
-            //Defaults.
-            size.height = getResources().getDimensionPixelSize(R.dimen.imageSize75);
-            size.width = getResources().getDimensionPixelSize(R.dimen.imageSize75);
+                grid.addView(temp);
+            }
 
-                if(landPortrait == Configuration.ORIENTATION_LANDSCAPE)
-                {
-                    if (boardRows == 4 && boardColumns == 4)
-                    {
-                        size.height = getResources().getDimensionPixelSize(R.dimen.imageSize60);
-                        size.width = getResources().getDimensionPixelSize(R.dimen.imageSize60);
-                    }
-                }
+            choosePictures();
+
+            for(int i=0;i<gridSize;i++)
+            {
+                button = (ImageButton)grid.getChildAt(i);
+
+                idOfImageButton = button.getId();
+
+                button.setImageResource(cardBack);
+
+                tempList.get(i).setIdOfImageButton(idOfImageButton);
+            }
+
+            cards = tempList;
+            Log.d("address",""+cards);
+            board.setCards(cards);
+            Log.d("address2",""+board.getCards());
+
+
+            startTimer();
+
+            v.setBackgroundResource(background);//Assign a random background.
+
         }
 
-
-
-            temp.setLayoutParams(size);
-
-            temp.setId(View.generateViewId());
-
-            if(grid!=null)grid.addView(temp);
-        }
 
         initListeners();
 
-        v.setBackgroundResource(getBackground());//Assign a random background.
 
         //Initialize the Card list.
 
-        choosePictures();
-
-        for(int i=0;i<gridSize;i++)
-        {
-            button = (ImageButton)grid.getChildAt(i);
-
-            idOfImageButton = button.getId();
-
-            button.setImageResource(cardBack);
-
-            tempList.get(i).setIdOfImageButton(idOfImageButton);
-        }
 
 
         //Show list of cards in log for debugging.
@@ -401,13 +346,6 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         }
 */
 
-        cards = tempList;
-        Log.d("address",""+cards);
-        board.setCards(cards);
-        Log.d("address2",""+board.getCards());
-
-
-        startTimer();
 
         //show the cards in the log to see their order
  /*       for(int i=0;i<cards.size();i++)
@@ -441,6 +379,109 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
         return v;
     }
+
+
+    private ViewGroup.LayoutParams determineSize(Configuration config)
+    {
+        int landPortrait = config.orientation;
+
+        ViewGroup.LayoutParams size = new ViewGroup.LayoutParams(0,0);
+
+        if(isLargeScreenDevice)
+        {
+            if(landPortrait == Configuration.ORIENTATION_PORTRAIT)
+            {
+                if(boardRows == 2 && boardColumns == 2)
+                {
+                    size.height = getResources().getDimensionPixelSize(R.dimen.imageSize200);
+                    size.width = getResources().getDimensionPixelSize(R.dimen.imageSize200);
+                }
+                else if (boardRows == 3 && boardColumns == 3)
+                {
+                    size.height = getResources().getDimensionPixelSize(R.dimen.imageSize150);
+                    size.width = getResources().getDimensionPixelSize(R.dimen.imageSize150);
+                }
+                else if (boardRows == 4 && boardColumns == 4)
+                {
+                    size.height = getResources().getDimensionPixelSize(R.dimen.imageSize125);
+                    size.width = getResources().getDimensionPixelSize(R.dimen.imageSize125);
+                }
+                else if (boardRows == 6 && boardColumns == 6)
+                {
+                    size.height = getResources().getDimensionPixelSize(R.dimen.imageSize75);
+                    size.width = getResources().getDimensionPixelSize(R.dimen.imageSize75);
+                }
+                else
+                {
+                    size.height = getResources().getDimensionPixelSize(R.dimen.imageSize100);
+                    size.width = getResources().getDimensionPixelSize(R.dimen.imageSize100);
+                }
+
+                    /* only issue here is 4x8 does not fit */
+            }
+            else if (landPortrait == Configuration.ORIENTATION_LANDSCAPE)
+            {
+                if(boardRows == 2 && boardColumns == 2)
+                {
+                    size.height = getResources().getDimensionPixelSize(R.dimen.imageSize200);
+                    size.width = getResources().getDimensionPixelSize(R.dimen.imageSize200);
+                }
+                else if (boardRows == 3 && boardColumns == 3)
+                {
+                    size.height = getResources().getDimensionPixelSize(R.dimen.imageSize150);
+                    size.width = getResources().getDimensionPixelSize(R.dimen.imageSize150);
+                }
+                else if (boardRows == 6 && boardColumns == 6)
+                {
+                    size.height = getResources().getDimensionPixelSize(R.dimen.imageSize75);
+                    size.width = getResources().getDimensionPixelSize(R.dimen.imageSize75);
+                }
+                else
+                {
+                    size.height = getResources().getDimensionPixelSize(R.dimen.imageSize100);
+                    size.width = getResources().getDimensionPixelSize(R.dimen.imageSize100);
+                }
+
+            }
+            else if (landPortrait == Configuration.ORIENTATION_UNDEFINED)
+            {
+                //untested orientation.
+                size.height = getResources().getDimensionPixelSize(R.dimen.imageSize100);
+                size.width = getResources().getDimensionPixelSize(R.dimen.imageSize100);
+            }
+
+            //Adjust size of cards based on number of cards shown and screen size used.
+        }
+        else//Small screen. e.g.  Phone.
+        {
+            //Defaults.
+            size.height = getResources().getDimensionPixelSize(R.dimen.imageSize75);
+            size.width = getResources().getDimensionPixelSize(R.dimen.imageSize75);
+
+            if(landPortrait == Configuration.ORIENTATION_LANDSCAPE)
+            {
+                if (boardRows == 4 && boardColumns == 4)
+                {
+                    size.height = getResources().getDimensionPixelSize(R.dimen.imageSize60);
+                    size.width = getResources().getDimensionPixelSize(R.dimen.imageSize60);
+                }
+            }
+        }
+
+        return size;
+    }
+
+    private void createViewFromRetainedState()
+    {
+
+    }
+
+    private void createViewFirstTime()
+    {
+
+    }
+
+
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
@@ -483,7 +524,7 @@ public class GameFragment extends Fragment implements View.OnClickListener{
     {
 //        stopAllSounds();
  //       releaseAll();
-
+/*
         saved = getActivity().getPreferences(Context.MODE_PRIVATE);
         editor = saved.edit();
 
@@ -500,9 +541,9 @@ editor.putLong("",millisecondsTime);
         editor.putFloat("",updateTime);
 
         editor.commit();
+*/
 
-
-
+        isRestoredState=true;
         super.onPause();
     }
 
