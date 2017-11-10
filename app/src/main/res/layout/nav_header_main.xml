@@ -13,26 +13,20 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:scaleType="fitXY"
-        app:srcCompat="@drawable/myicon"
-        tools:ignore="ContentDescription" />
-
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/developedBy"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:textColor="@android:color/black" />
+        android:textColor="@android:color/black"
+        android:textSize="18sp" />
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/emailAddress"
-        android:textColor="@android:color/black" />
+        android:textColor="@android:color/black"
+        android:textSize="14sp" />
 
 </LinearLayout>

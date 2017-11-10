@@ -143,7 +143,9 @@ public class GameFragment extends Fragment implements View.OnClickListener{
     private SharedPreferences saved;//Retain certain values to preserve game-state when orientation of device changes.
     private SharedPreferences.Editor editor;
 
-    ArrayList<Card> tempList;
+    private ArrayList<Card> tempList;
+
+    private RetainedFragment rf;
 
     public GameFragment() {
         // Required empty public constructor
@@ -228,6 +230,9 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         background = getBackground();
 
         isRestoredState = false;
+
+        setRetainInstance(true);
+        msg("onCreate");
     }
 
     @Override
@@ -268,9 +273,7 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
         updateStats();
 
-        //Dynamically create a grid based upon boardSize*boardSize  e.g.  2x2, 4x4... always square
-        grid.setColumnCount(boardColumns);
-        grid.setRowCount(boardRows);
+
 
 
         /*
@@ -284,13 +287,39 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         Context context = inflater.getContext();
         ViewGroup.LayoutParams size = determineSize(config);
 
+        //Dynamically create a grid based upon boardSize*boardSize  e.g.  2x2, 4x4... always square
+        grid.setColumnCount(boardColumns);
+        grid.setRowCount(boardRows);
+
         if(isRestoredState)
         {
             //Get pre-existing values.  Score, Time, Matches made, all cards used, and whether they are displayed or not.
+
+            GridLayout tempGrid = rf.getGrid();
+
+            cards = rf.getList();
+
+            for(int i=0; i < gridSize; i++)
+            {
+
+                ImageButton b = new ImageButton(context);
+
+                b.setScaleType(((ImageButton)tempGrid.getChildAt(i)).getScaleType());
+
+                b.setLayoutParams(tempGrid.getChildAt(i).getLayoutParams());
+
+                b.setId(tempGrid.getChildAt(i).getId());
+
+                b.setEnabled(tempGrid.getChildAt(i).isEnabled());
+
+                b.setImageDrawable(((ImageButton)tempGrid.getChildAt(i)).getDrawable());
+
+                grid.addView(b);
+            }
+
         }
         else
         {
-
 
             for(int i=0; i < gridSize; i++)
             {
@@ -325,13 +354,13 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
             startTimer();
 
-            v.setBackgroundResource(background);//Assign a random background.
+
 
         }
 
 
         initListeners();
-
+        v.setBackgroundResource(background);//Assign a random background.
 
         //Initialize the Card list.
 
@@ -380,7 +409,7 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         return v;
     }
 
-
+    /* Determine what DP units to make each ImageButton in the GridLayout */
     private ViewGroup.LayoutParams determineSize(Configuration config)
     {
         int landPortrait = config.orientation;
@@ -543,7 +572,15 @@ editor.putLong("",millisecondsTime);
         editor.commit();
 */
 
-        isRestoredState=true;
+        isRestoredState = true;
+
+
+        rf = new RetainedFragment();
+
+        rf.setData(cards);
+        rf.setGridLayout(grid);
+
+
         super.onPause();
     }
 
@@ -697,7 +734,7 @@ editor.putLong("",millisecondsTime);
         catch(Exception e)
         {
             id = -9999;//Should be unreachable statement because all IDs stored are ints wrapped in a String... should be no exceptions occurring.
-            Log.d("Exception chooseImage",e.toString());
+            //Log.d("Exception chooseImage",e.toString());
         }
 
         drawableIds.remove(index);
@@ -1195,7 +1232,7 @@ sp.release();
 
     private void stopSound(MediaPlayer sound)//Stop playing the sound.
     {
-        sound.stop();
+       // sound.stop();
     }
 
     private void stopAllSounds()
@@ -1284,3 +1321,5 @@ sp.release();
 
 
 }
+
+/* try to change orientation for 4x8 grids: GridLayout.setOrientation(int orientation) */
