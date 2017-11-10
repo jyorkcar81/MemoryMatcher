@@ -143,6 +143,8 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
             //If new high score is reached by the game player, then 1.  Get name.  2.  Insert new record in DB.
             UsernameDialogFragment dialog = new UsernameDialogFragment();
 
+            dialog.setCancelable(false);
+
             dialog.show(ft, "usernamedialog");
 
             v.invalidate();

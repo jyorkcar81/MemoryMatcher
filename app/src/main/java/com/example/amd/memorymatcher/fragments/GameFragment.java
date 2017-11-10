@@ -122,7 +122,7 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
     private int matchCount;//Total matches made.
 
-    private boolean threadBusy;
+    private boolean threadBusy; // Aids in responsiveness of app by waiting on UI thread at times.
 
     private TextView    tvScore,
                         tvTime,
@@ -140,12 +140,14 @@ public class GameFragment extends Fragment implements View.OnClickListener{
                         soundMusic1,
                         soundWin1;
 
-    private SharedPreferences saved;//Retain certain values to preserve game-state when orientation of device changes.
-    private SharedPreferences.Editor editor;
+    //Retain certain values to preserve game-state when orientation of device changes.
+
 
     private ArrayList<Card> tempList;
 
     private RetainedFragment rf;
+    private static final String RETAINED_FRAGMENT = "data";//Tag to retrieve the retained fragment that contains data for retaining game-state.
+    private int landPortrait;
 
     public GameFragment() {
         // Required empty public constructor
@@ -194,9 +196,6 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         soundWin1   = MediaPlayer.create(getActivity(),R.raw.w1);
         */
 
-
-
-
         board = new Board(boardRows,boardColumns,matchType);
         boardSize = board.getNumOfCards();
         gridSize = board.getNumOfCards();
@@ -217,12 +216,6 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         drawableIds = getAllDrawableId();
 
 
-
-
-
-
-
-
         tempList = new ArrayList<Card>();
 
         cardBack = getCardBackImage();
@@ -231,14 +224,23 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
         isRestoredState = false;
 
+        landPortrait = getResources().getConfiguration().orientation;//Initially orientation is undefined when Fragment is first created, then to Portrait/landscape.
+
         setRetainInstance(true);
-        msg("onCreate");
+        msg("Fragment onCreate");
+
+        rf = (RetainedFragment) getFragmentManager().findFragmentByTag(RETAINED_FRAGMENT);
+
+        if(rf == null)
+        {
+            rf = new RetainedFragment();
+            getFragmentManager().beginTransaction().add(rf,RETAINED_FRAGMENT).commit();
+        }
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
-        //setRetainInstance(true);
 
         int idOfImageButton;
 
@@ -273,9 +275,6 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
         updateStats();
 
-
-
-
         /*
                     Cards ---> Grid cells
                     1,2,3,4 --- >  1,2,3,4
@@ -285,7 +284,7 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         */
 
         Context context = inflater.getContext();
-        ViewGroup.LayoutParams size = determineSize(config);
+        ViewGroup.LayoutParams size = determineSize();
 
         //Dynamically create a grid based upon boardSize*boardSize  e.g.  2x2, 4x4... always square
         grid.setColumnCount(boardColumns);
@@ -347,14 +346,10 @@ public class GameFragment extends Fragment implements View.OnClickListener{
             }
 
             cards = tempList;
-            Log.d("address",""+cards);
-            board.setCards(cards);
-            Log.d("address2",""+board.getCards());
 
+            board.setCards(cards);
 
             startTimer();
-
-
 
         }
 
@@ -410,10 +405,8 @@ public class GameFragment extends Fragment implements View.OnClickListener{
     }
 
     /* Determine what DP units to make each ImageButton in the GridLayout */
-    private ViewGroup.LayoutParams determineSize(Configuration config)
+    private ViewGroup.LayoutParams determineSize()
     {
-        int landPortrait = config.orientation;
-
         ViewGroup.LayoutParams size = new ViewGroup.LayoutParams(0,0);
 
         if(isLargeScreenDevice)
@@ -500,15 +493,7 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         return size;
     }
 
-    private void createViewFromRetainedState()
-    {
 
-    }
-
-    private void createViewFirstTime()
-    {
-
-    }
 
 
 
@@ -536,6 +521,17 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         super.onDetach();
         mListener = null;
 
+        gameOverDialogFragment.dismiss();
+    }
+
+
+    @Override
+    public void onConfigurationChanged(Configuration config)
+    {
+        super.onConfigurationChanged(config);
+
+        /* Take note of orientation change as this determines DP size of ImageButtons in the GridLayout */
+        landPortrait = config.orientation;
     }
 
 
@@ -553,33 +549,12 @@ public class GameFragment extends Fragment implements View.OnClickListener{
     {
 //        stopAllSounds();
  //       releaseAll();
-/*
-        saved = getActivity().getPreferences(Context.MODE_PRIVATE);
-        editor = saved.edit();
 
-        editor.putInt("",boardColumns);
-        editor.putInt("",boardRows);
-        editor.putInt("",matchType);
-        editor.putInt("",score);
-
-
-editor.putLong("",millisecondsTime);
-        editor.putLong("",minutesTime);
-        editor.putLong("",secondsTime);
-
-        editor.putFloat("",updateTime);
-
-        editor.commit();
-*/
-
+        msg("fragment onPause");
         isRestoredState = true;
-
-
-        rf = new RetainedFragment();
 
         rf.setData(cards);
         rf.setGridLayout(grid);
-
 
         super.onPause();
     }
@@ -588,7 +563,8 @@ editor.putLong("",millisecondsTime);
     public void onResume()
     {
         super.onResume();
-        //do stuf
+
+        landPortrait = getResources().getConfiguration().orientation;
     }
 
     /**
@@ -968,9 +944,9 @@ editor.putLong("",millisecondsTime);
             //Stops timer at Game Over.
             toggleTimer = false;
 
-            stopSound(soundMusic1);
+ //           stopSound(soundMusic1);
 
-            playSound(soundWin1);
+ //           playSound(soundWin1);
 
             showHighScores();
 
@@ -983,6 +959,8 @@ editor.putLong("",millisecondsTime);
         gameOverDialogFragment = new GameOverDialogFragment();
 
         FragmentTransaction ft = getFragmentManager().beginTransaction();
+
+        gameOverDialogFragment.setCancelable(false);
 
         gameOverDialogFragment.show(ft, "gameoverdialog");
     }
@@ -1005,11 +983,11 @@ editor.putLong("",millisecondsTime);
                 }
                 else
                 {
-                    gameOverDialogFragment.dismiss();
-
                     HighScoresFragment fragment = HighScoresFragment.newInstance(score);
                     FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
                     fragmentTransaction.replace(R.id.framelayout, fragment).commit();
+
+                    //gameOverDialogFragment.dismiss();
                 }
             }
         },0);
@@ -1218,11 +1196,11 @@ editor.putLong("",millisecondsTime);
                 sp.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
                     @Override
                     public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
-                        sp.play(soundId, 1, 1, 0, 0, 1);
+ //                       sp.play(soundId, 1, 1, 0, 0, 1);
                     }
                 });
 
-sp.release();
+
 
 
             }
