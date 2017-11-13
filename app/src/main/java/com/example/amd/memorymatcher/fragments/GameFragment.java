@@ -11,10 +11,14 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.res.AssetFileDescriptor;
+import android.content.res.AssetManager;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
@@ -47,6 +51,7 @@ import com.example.amd.memorymatcher.R;
 import com.example.amd.memorymatcher.other.Board;
 import com.example.amd.memorymatcher.other.Card;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -620,7 +625,66 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
+    //Accesses filesystem and loads into memory the full  image...may use large amounts of RAM for large pictures.
+    private Drawable getImage(int index, int maxW, int maxH)
+    {
+        Drawable d = null;
 
+        try
+        {
+            d = new BitmapDrawable(getResources(), decodeSampledBitmapFromResource(getAssets(), index, maxW, maxH));
+        }
+        catch(IOException e)
+        {
+            // showMessage("File not found.  "+e.toString());
+        }
+
+        return d;
+    }
+    public static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight)
+    {
+        // Raw height and width of image
+        final int height    = options.outHeight;
+        final int width     = options.outWidth;
+        int inSampleSize    = 1;
+
+        if (height > reqHeight || width > reqWidth)
+        {
+
+            final int halfHeight   = height / 2;
+            final int halfWidth    = width / 2;
+
+            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+            // height and width larger than the requested height and width.
+            while ((halfHeight / inSampleSize) >= reqHeight
+                    && (halfWidth / inSampleSize) >= reqWidth)
+            {
+                inSampleSize *= 2;
+            }
+        }
+
+        return inSampleSize;
+    }
+
+    //Gets a bitmap`s width & height without loading into memory the full image (the pixels), thusly saving memory.  Then returns
+    //a scaled down version of the image.  e.g.  Take a 12Megapixel image, shrink it, then use the smaller less spacious image for a thumbnail.
+    public static Bitmap decodeSampledBitmapFromResource(AssetManager ass, int resID, int reqWidth, int reqHeight) throws IOException
+    {
+        // First decode with inJustDecodeBounds=true to check dimensions
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+
+       // BitmapFactory.decodeStream(ass.open(ASSETS_DIR+"/"+array[index]),null,options);
+        BitmapFactory.decodeStream(,resID,options);
+
+        // Calculate inSampleSize
+        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+
+        // Decode bitmap with inSampleSize set
+        options.inJustDecodeBounds = false;
+
+        return  BitmapFactory.decodeStream(,resID,options);//BitmapFactory.decodeStream(ass.open(ASSETS_DIR+"/"+array[index]),null,options);
+    }
 
     private void showGO()
     {
