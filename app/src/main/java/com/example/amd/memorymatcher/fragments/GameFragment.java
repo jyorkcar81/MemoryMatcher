@@ -13,6 +13,7 @@ import android.content.SharedPreferences;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -626,13 +627,13 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         void onFragmentInteraction(Uri uri);
     }
     //Accesses filesystem and loads into memory the full  image...may use large amounts of RAM for large pictures.
-    private Drawable getImage(int index, int maxW, int maxH)
+    private Drawable getImage(int resID, int maxW, int maxH)
     {
         Drawable d = null;
 
         try
         {
-            d = new BitmapDrawable(getResources(), decodeSampledBitmapFromResource(getAssets(), index, maxW, maxH));
+            d = new BitmapDrawable(getResources(), decodeSampledBitmapFromResource(getResources(), resID, maxW, maxH));
         }
         catch(IOException e)
         {
@@ -668,14 +669,14 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
     //Gets a bitmap`s width & height without loading into memory the full image (the pixels), thusly saving memory.  Then returns
     //a scaled down version of the image.  e.g.  Take a 12Megapixel image, shrink it, then use the smaller less spacious image for a thumbnail.
-    public static Bitmap decodeSampledBitmapFromResource(AssetManager ass, int resID, int reqWidth, int reqHeight) throws IOException
+    public static Bitmap decodeSampledBitmapFromResource(Resources r, int resID, int reqWidth, int reqHeight) throws IOException
     {
         // First decode with inJustDecodeBounds=true to check dimensions
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
 
        // BitmapFactory.decodeStream(ass.open(ASSETS_DIR+"/"+array[index]),null,options);
-        BitmapFactory.decodeStream(,resID,options);
+        BitmapFactory.decodeResource(r,resID,options);
 
         // Calculate inSampleSize
         options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
@@ -683,7 +684,7 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         // Decode bitmap with inSampleSize set
         options.inJustDecodeBounds = false;
 
-        return  BitmapFactory.decodeStream(,resID,options);//BitmapFactory.decodeStream(ass.open(ASSETS_DIR+"/"+array[index]),null,options);
+        return  BitmapFactory.decodeResource(r,resID,options);//BitmapFactory.decodeStream(ass.open(ASSETS_DIR+"/"+array[index]),null,options);
     }
 
     private void showGO()
@@ -833,7 +834,12 @@ public class GameFragment extends Fragment implements View.OnClickListener{
                 {
                     firstCard = (Card)cards.get(i);
 
-                    imageButton.setImageResource(firstCard.getIdOfPic());
+                    //imageButton.setImageResource(firstCard.getIdOfPic());
+
+                    Drawable d = getImage(firstCard.getIdOfPic(), imageButton.getWidth(), imageButton.getHeight());
+
+                    imageButton.setImageDrawable(d);
+
                     imageButton.setEnabled(false);
 
                     playSound(soundTap2,DONT_LOOP_SOUND);
@@ -852,7 +858,11 @@ public class GameFragment extends Fragment implements View.OnClickListener{
                 {
                     secondCard = (Card)cards.get(i);
 
-                    imageButton.setImageResource(secondCard.getIdOfPic());
+                    //imageButton.setImageResource(secondCard.getIdOfPic());
+                    Drawable d = getImage(secondCard.getIdOfPic(), imageButton.getWidth(), imageButton.getHeight());
+
+                    imageButton.setImageDrawable(d);
+
                     imageButton.setEnabled(false);
 
                     playSound(soundTap2,DONT_LOOP_SOUND);
@@ -917,7 +927,11 @@ public class GameFragment extends Fragment implements View.OnClickListener{
                 {
                     firstCard = (Card)cards.get(i);
 
-                    imageButton.setImageResource(firstCard.getIdOfPic());
+                    //imageButton.setImageResource(firstCard.getIdOfPic());
+                    Drawable d = getImage(firstCard.getIdOfPic(), imageButton.getWidth(), imageButton.getHeight());
+
+                    imageButton.setImageDrawable(d);
+
                     imageButton.setEnabled(false);
 
                     playSound(soundTap2,DONT_LOOP_SOUND);
@@ -936,7 +950,11 @@ public class GameFragment extends Fragment implements View.OnClickListener{
                 {
                     secondCard = (Card)cards.get(i);
 
-                    imageButton.setImageResource(secondCard.getIdOfPic());
+                    //imageButton.setImageResource(secondCard.getIdOfPic());
+                    Drawable d = getImage(secondCard.getIdOfPic(), imageButton.getWidth(), imageButton.getHeight());
+
+                    imageButton.setImageDrawable(d);
+
                     imageButton.setEnabled(false);
 
                     playSound(soundTap2,DONT_LOOP_SOUND);
@@ -955,7 +973,11 @@ public class GameFragment extends Fragment implements View.OnClickListener{
                 {
                     thirdCard = (Card)cards.get(i);
 
-                    imageButton.setImageResource(thirdCard.getIdOfPic());
+                    //imageButton.setImageResource(thirdCard.getIdOfPic());
+                    Drawable d = getImage(thirdCard.getIdOfPic(), imageButton.getWidth(), imageButton.getHeight());
+
+                    imageButton.setImageDrawable(d);
+
                     imageButton.setEnabled(false);
 
                     playSound(soundTap2,DONT_LOOP_SOUND);
