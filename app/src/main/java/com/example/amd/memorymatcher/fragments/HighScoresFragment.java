@@ -263,47 +263,47 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
 
     public boolean isNewHighScore()//Determine if the new score is a high score.
     {
+        String score="";
+        int count;
+
         db = dbHelper.getReadableDatabase();
 
         //Query the DB for the list of high scores looking to see if the new score is a high score.
         cursor = db.rawQuery("SELECT * FROM "+TABLE_NAME+" ORDER BY "+SCORE_COLUMN_NAME+" DESC LIMIT "+ROWS_IN_TABLE_LAYOUT,null);
 
-        boolean hasRows = cursor.moveToFirst();
+         count = cursor.getCount();//Will be 5 or less because of LIMIT.
 
-        //TableRow row;
-        int i=1;
-        String rank="1",name="",score="";
-
-        //If table is empty, then any non-negative & non-zero score is a new high score.
-        if(!hasRows && possibleHighScore >= 1 )
+        if(count == ROWS_IN_TABLE_LAYOUT)
         {
-            return true;
-        }
-
-        while(hasRows)
-        {
-           // row = (TableRow)table.getChildAt(i);
-
-            //name = cursor.getString(1);
+            cursor.moveToLast();
             score = Integer.valueOf(cursor.getInt(2)).toString();
-
-            rank = Integer.valueOf(Integer.parseInt(rank) + 1).toString();
-
-
-            if(Integer.valueOf(Integer.parseInt(rank)) >= 5)//Check if new score is greater than lowest of the high scores, this is the 5th one.
+            if(possibleHighScore >= Integer.valueOf(Integer.parseInt(score)))
             {
-                if(possibleHighScore >= Integer.valueOf(Integer.parseInt(score)))
-                {
-                    return true;
-                }
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else if(count < ROWS_IN_TABLE_LAYOUT)//0-to-4
+        {
+            /* Only use high scores of 1 or greater.  i.e.   1...999,999,9999,9999,9999 */
+            if(possibleHighScore >= 1 )
+            {
+                return true;
+            }
+            else
+            {
+                return false;
             }
 
-            hasRows = cursor.moveToNext();
-
-            i++;
+        }
+        else /* Technically, unreachable because LIMIT will never return a value greater than count=5 ROWS_IN_TABLE_LAYOUT */
+        {
+            return false;
         }
 
-        return false;
     }
 
     private void closeDB()
@@ -438,7 +438,67 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
 
                                 db = dbHelper.getWritableDatabase();
 
-                                db.insert(TABLE_NAME,null,cv);
+
+/************/
+                                String score="";
+                                int count;
+
+                                //Query the DB for the list of high scores looking to see if the new score is a high score.
+                                cursor = db.rawQuery("SELECT * FROM "+TABLE_NAME+" ORDER BY "+SCORE_COLUMN_NAME+" DESC LIMIT "+ROWS_IN_TABLE_LAYOUT,null);
+
+                                count = cursor.getCount();//Will be 5 or less because of LIMIT.
+
+                                if(count == ROWS_IN_TABLE_LAYOUT)
+                                {
+                                    cursor.moveToLast();
+                                    score = Integer.valueOf(cursor.getInt(2)).toString();
+
+                                    if(possibleHighScore >= Integer.valueOf(Integer.parseInt(score)))
+                                    {
+                                        int rowID = cursor.getInt(0);//Get ID of last row.  It will be used to change the DB entry at the ID for name & score.
+
+                                        db.update(TABLE_NAME,cv,ID_COLUMN_NAME+"="+rowID,null);
+                                    }
+                                    else
+                                    {
+
+                                    }
+                                }
+                                else if(count < ROWS_IN_TABLE_LAYOUT)//0-to-4
+                                {
+                                    /* Only use high scores of 1 or greater.  i.e.   1...999,999,9999,9999,9999 */
+                                    if(possibleHighScore >= 1 )
+                                    {
+                                        db.insert(TABLE_NAME,null,cv);
+                                    }
+                                    else
+                                    {
+                                        //score is 0, or negative somehow, so store nothing in the DB.
+                                    }
+
+                                }
+                                else /* Technically, unreachable because LIMIT will never return a value greater than count=5 ROWS_IN_TABLE_LAYOUT */
+                                {
+                                    //Save nothing to DB.
+                                }
+
+
+
+/************/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
                                 updateTableLayout();
 

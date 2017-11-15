@@ -223,8 +223,6 @@ public class GameFragment extends Fragment implements View.OnClickListener{
             sp = new SoundPool(MAX_STREAMS, AudioManager.STREAM_MUSIC, 0);
         }
 
-
-
         /** soundId for Later handling of sound pool **/
         soundTap1   = sp.load(getActivity(), R.raw.c1, 1);
         soundTap2   = sp.load(getActivity(), R.raw.c2, 1);
@@ -232,10 +230,7 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         soundMusic1 = sp.load(getActivity(), R.raw.m1, 1);
         soundWin1   = sp.load(getActivity(), R.raw.w1, 1);
 
-
         playSound(soundMusic1,LOOP_SOUND);
-
-
 
         board = new Board(boardRows,boardColumns,matchType);
         boardSize = board.getNumOfCards();
@@ -414,30 +409,6 @@ public class GameFragment extends Fragment implements View.OnClickListener{
             Log.d("getIdOfPic:",""+cards.get(i).getIdOfPic());
         }*/
 
-
-
-/*
-        ArrayList<Card> test = new ArrayList<Card>();
-
-        test.add(new Card(1,R.drawable.beehoneybeeapisinsect144252,false));
-        test.add(new Card(2,R.drawable.beehoneybeeapisinsect144252,false));
-        test.add(new Card(3,R.drawable.beehoneybeeapisinsect144252,false));
-        test.add(new Card(4,R.drawable.beehoneybeeapisinsect144252,false));
-
-        java.util.Collections.shuffle(test);
-
-        cards=test;
-
-        //Show list of cards in log for debugging.
-        for(int i=0;i<test.size();i++)
-        {
-
-
-            Log.d("card",test.get(i).getIdOfImageButton()+"");
-        }*/
-
-
-
         return v;
     }
 
@@ -561,7 +532,6 @@ public class GameFragment extends Fragment implements View.OnClickListener{
     {
         super.onDestroy();
 
-        if(gameOverDialogFragment!=null){gameOverDialogFragment.dismiss();}
 
         //Release all SoundPool sound resources to avoid later audio problems with running other apps.
         sp.release();
@@ -599,6 +569,17 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
         sp.autoPause();
 
+        Fragment f = getFragmentManager().findFragmentByTag("gameoverdialog");
+
+        if(f != null)
+        {
+            DialogFragment d = (DialogFragment)f;
+            //if(f != null && f.isVisible())
+            //{
+            d.dismiss();
+            getFragmentManager().beginTransaction().remove(f).commit();
+            //}
+        }
         super.onPause();
     }
 
