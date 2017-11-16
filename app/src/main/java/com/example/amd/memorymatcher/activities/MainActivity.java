@@ -46,16 +46,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 boardColumns,
                 matchType;//2 is a pair, 3, 4... whatever
 
-
+    private Button  butPlay,
+                    butTutorial;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Button but = (Button)findViewById(R.id.buttonPlay);
+        butPlay     = (Button)findViewById(R.id.buttonPlay);
+        butTutorial = (Button)findViewById(R.id.buttonTutorial);
 
-        but.setOnClickListener(this);
+        butPlay.setOnClickListener(this);
+        butTutorial.setOnClickListener(this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -271,19 +274,32 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void onClick(View v)
     {
-        title = getString(R.string.two_by_two_title);
+        if(v.getId() == butPlay.getId())
+        {
+            title = getString(R.string.two_by_two_title);
 
-        boardRows       =   2;
-        boardColumns    =   2;
+            boardRows       =   2;
+            boardColumns    =   2;
 
-        matchType = GameFragment.MATCH_TYPE_2;
+            matchType = GameFragment.MATCH_TYPE_2;
 
-        nextFragment = GAME_FRAGMENT;
+            nextFragment = GAME_FRAGMENT;
 
-        setTitle(title);
+            setTitle(title);
 
-        //Replace fragment.
-        updateFragment().start();
+            //Replace fragment.
+            updateFragment().start();
+
+        }
+        else if(v.getId() == butTutorial.getId())
+        {
+
+        }
+        else
+        {
+            //Do nothing.  Should be unreachable.
+        }
+
     }
 
 

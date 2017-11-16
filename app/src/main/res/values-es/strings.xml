@@ -63,6 +63,14 @@
     <!-- GO! message -->
     <string name="go_label">GO!</string>
     <string name="play_button">Jugar</string>
+    <string name="nav_eightfour">4x8</string>
+    <string name="nav_fourfive">4x5</string>
+    <string name="nav_sixsix">6x6</string>
+    <string name="tutorial_gametype">Dos modos de juego diferentes: Match 2 y Match 3. Tenga en cuenta que solo 3x3 juega \"Match 3\". En Match 3, debes unir 3 imágenes para ganar puntos. En el Partido 2, debes unir solo 2 imágenes para ganar puntos.</string>
+    <string name="tutorial_menu">Deslice el menú a la izquierda de la pantalla. Elige el tamaño del juego. p.ej. 2x2.</string>
+    <string name="tutorial_titledescription">Después de seleccionar el tamaño del juego, se muestra el título.</string>
+    <string name="tutorial_titlematch2">Título del partido 2.</string>
+    <string name="tutorial_titlematch3">Título Match 3.</string>
 
 
 </resources>

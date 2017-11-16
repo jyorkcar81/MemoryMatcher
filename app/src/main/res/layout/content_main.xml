@@ -57,12 +57,11 @@
             android:id="@+id/editTextIntro"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="46dp"
             android:background="#00000000"
             android:cursorVisible="false"
             android:ems="10"
@@ -72,29 +71,42 @@
             android:saveEnabled="false"
             android:text="@string/intro"
             android:textSize="18sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintHorizontal_bias="0.503"
+            app:layout_constraintHorizontal_bias="0.498"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/editTextWelcome"
-            app:layout_constraintVertical_bias="0.126"
             tools:ignore="LabelFor" />
 
         <Button
             android:id="@+id/buttonPlay"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="87dp"
             android:text="@string/play_button"
             app:backgroundTint="@color/myWhite"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/editTextIntro"
-            app:layout_constraintVertical_bias="0.193" />
+            app:layout_constraintHorizontal_bias="0.498" />
+
+        <Button
+            android:id="@+id/buttonTutorial"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="97dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="8dp"
+            android:text="@string/tutorial_button"
+            app:backgroundTint="@color/myWhite"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/buttonPlay"
+            app:layout_constraintVertical_bias="0.141" />
 
     </android.support.constraint.ConstraintLayout>
 

@@ -6,5 +6,5 @@
 
     <!-- MY CUSTOM COLORS -->
     <color name="myDarkGray">#23444445</color>
-    <color name="myWhite">#FFFFFF</color>
+    <color name="myWhite">#ffffff</color>
 </resources>

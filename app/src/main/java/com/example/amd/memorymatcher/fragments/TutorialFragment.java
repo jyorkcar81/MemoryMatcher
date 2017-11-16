@@ -23,7 +23,7 @@ import com.example.amd.memorymatcher.R;
  * Use the {@link TutorialFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class TutorialFragment extends Fragment implements View.OnClickListener{
+public class TutorialFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -32,10 +32,6 @@ public class TutorialFragment extends Fragment implements View.OnClickListener{
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-
-    private Button button;
-    private VideoView video;
-    private MediaController controller;
 
     private OnFragmentInteractionListener mListener;
 
@@ -76,12 +72,7 @@ public class TutorialFragment extends Fragment implements View.OnClickListener{
 
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_tutorial, container, false);
-        button = (Button)v.findViewById(R.id.buttonWatchVideo);
-        video = (VideoView)v.findViewById(R.id.videoView);
 
-        controller = new MediaController(getActivity());
-
-        button.setOnClickListener(this);
         return v;
     }
 
@@ -124,33 +115,4 @@ public class TutorialFragment extends Fragment implements View.OnClickListener{
         void onFragmentInteraction(Uri uri);
     }
 
-    //Button listener.
-    public void onClick(View v)
-    {
-        String path = "android.resource://" + v.getContext().getPackageName() + "/" + R.raw.test1;
-
-        Log.d("path",path);
-
-        Uri uri = android.net.Uri.parse(path);
-
-        controller.setAnchorView(video);
-
-        video.setZOrderOnTop(true);
-        video.setVideoURI(uri);
-        video.setMediaController(controller);
-        video.requestFocus();
-
-        video.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mediaPlayer) {
-
-                //play the video.
-                video.start();
-
-            }
-        });
-
-
-
-    }
 }

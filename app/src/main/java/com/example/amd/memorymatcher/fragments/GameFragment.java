@@ -1145,6 +1145,7 @@ public class GameFragment extends Fragment implements View.OnClickListener{
                         ||tempName.startsWith("notify_")
                         ||tempName.startsWith("side_")
                         ||tempName.startsWith("myicon")
+                        ||tempName.startsWith("tut_")
                         )
                 {
                     //Do not add these.
