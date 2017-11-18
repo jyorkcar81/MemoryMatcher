@@ -518,7 +518,14 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         rf.setGridLayout(grid);
 
         sp.autoPause();
-        mp.pause();
+
+        if(mp != null)
+        {
+            if(mp.isPlaying())
+            {
+                mp.pause();
+            }
+        }
 
         Fragment f = getFragmentManager().findFragmentByTag(GAME_OVER_DIALOG_TAG);
 
