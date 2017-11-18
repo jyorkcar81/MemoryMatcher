@@ -4,12 +4,17 @@ import android.app.Fragment;
 import android.os.Bundle;
 import android.widget.GridLayout;
 
-import com.example.amd.memorymatcher.other.Card;
-
 import java.util.ArrayList;
 
-/**
- * Created by AMD on 11/7/2017.
+import com.example.amd.memorymatcher.other.Card;
+
+/*  ************************************************************************************************
+    * COPYRIGHT NOTICE * COPYRIGHT NOTICE * COPYRIGHT NOTICE * COPYRIGHT NOTICE * COPYRIGHT NOTICE *
+ *  ************************************************************************************************
+ *
+ *  Copyright 2017 by Jed York.  Copyrighted material cannot be used without express written consent.
+ *  Unlawful reproduction of material forfeits all earned moneys.  If lawsuit is sought for forfeiture of damages,
+ *  damages will be doubled and any and all of your rights are waived.
  */
 
 public class RetainedFragment extends Fragment
@@ -19,7 +24,6 @@ public class RetainedFragment extends Fragment
 
     private GridLayout grid;
 
-    // this method is only called once for this fragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

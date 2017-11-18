@@ -71,6 +71,7 @@
     <string name="tutorial_titledescription">Después de seleccionar el tamaño del juego, se muestra el título.</string>
     <string name="tutorial_titlematch2">Título del partido 2.</string>
     <string name="tutorial_titlematch3">Título Match 3.</string>
+    <string name="tutorial_button">Tutorial</string>
 
 
 </resources>

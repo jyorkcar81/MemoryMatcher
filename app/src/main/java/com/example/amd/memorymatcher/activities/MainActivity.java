@@ -1,7 +1,5 @@
 package com.example.amd.memorymatcher.activities;
 
-
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.View;
@@ -15,10 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
-import android.util.Log;
-
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.example.amd.memorymatcher.R;
 import com.example.amd.memorymatcher.fragments.AboutFragment;
@@ -26,6 +21,14 @@ import com.example.amd.memorymatcher.fragments.GameFragment;
 import com.example.amd.memorymatcher.fragments.HighScoresFragment;
 import com.example.amd.memorymatcher.fragments.TutorialFragment;
 
+/*  ************************************************************************************************
+    * COPYRIGHT NOTICE * COPYRIGHT NOTICE * COPYRIGHT NOTICE * COPYRIGHT NOTICE * COPYRIGHT NOTICE *
+ *  ************************************************************************************************
+ *
+ *  Copyright 2017 by Jed York.  Copyrighted material cannot be used without express written consent.
+ *  Unlawful reproduction of material forfeits all earned moneys.  If lawsuit is sought for forfeiture of damages,
+ *  damages will be doubled and any and all of your rights are waived.
+ */
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener{
 
@@ -33,14 +36,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private String title = "";
 
-    private static final int GAME_FRAGMENT      =   0;
-    private static final int ABOUT_FRAGMENT     =   1;
-    private static final int TUTORIAL_FRAGMENT  =   2;
-    private static final int HIGH_SCORES_FRAGMENT = 3;
+    private static final int GAME_FRAGMENT          =   0;
+    private static final int ABOUT_FRAGMENT         =   1;
+    private static final int TUTORIAL_FRAGMENT      =   2;
+    private static final int HIGH_SCORES_FRAGMENT   =   3;
 
     private static int nextFragment;
-
-    private int boardSize;//2x2, 4x4, 3x3...
 
     private int boardRows,
                 boardColumns,
@@ -62,17 +63,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-         /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-       fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });*/
-
-
 
         //Show/hide the menuItem for 8x4 game depending on screen size used.
         Configuration config = getResources().getConfiguration();
@@ -101,17 +91,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             item4by5.setVisible(false);
         }
 
-
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-
         navigationView.setNavigationItemSelectedListener(this);
-        msg("Activity onCreate");
+
     }
 
     @Override
@@ -152,7 +139,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
+
         int id = item.getItemId();
 
         if (id == R.id.nav_2by2)
@@ -166,7 +153,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             nextFragment = GAME_FRAGMENT;
 
-
         }
         else if (id == R.id.nav_3by3)
         {
@@ -178,7 +164,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             matchType = GameFragment.MATCH_TYPE_3;
 
             nextFragment = GAME_FRAGMENT;
-
 
         }
         else if (id == R.id.nav_4by4)
@@ -235,7 +220,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             nextFragment = TUTORIAL_FRAGMENT;
 
-
         }
         else if (id == R.id.nav_highscores)
         {
@@ -243,17 +227,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             nextFragment = HIGH_SCORES_FRAGMENT;
 
-
-
-
-           // startActivity(new Intent(this,HighScores.class));
         }
         else if (id == R.id.nav_about)
         {
             title = getString(R.string.about_title);
 
             nextFragment = ABOUT_FRAGMENT;
-
 
         }
         else
@@ -293,7 +272,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         else if(v.getId() == butTutorial.getId())
         {
+            title = getString(R.string.tutorial_title);
 
+            nextFragment = TUTORIAL_FRAGMENT;
+
+            setTitle(title);
+
+            //Replace fragment.
+            updateFragment().start();
         }
         else
         {
@@ -305,7 +291,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private Fragment pickFragment()
     {
-        //Log.d("nextFragment=",nextFragment+"");
+
         switch (nextFragment)
         {
             case GAME_FRAGMENT:
@@ -337,17 +323,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private Thread updateFragment()
     {
-        return new Thread() {
-
-            //Fragment fragment = null;
+        return new Thread()
+        {
 
             @Override
             public void run() {
                 // update the main content by replacing fragments
                 Fragment fragment = pickFragment();
-                Log.d("frag",fragment+"");
+
                 FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-                //fragmentTransaction.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
                 fragmentTransaction.replace(R.id.framelayout, fragment).commit();
             }
         };
@@ -367,38 +351,5 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         }
     }
-
-
-    public void msg(String m)
-    {
-        Toast.makeText(getApplicationContext(),m,Toast.LENGTH_SHORT).show();
-    }
-
-
-
-/*
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-
-        // Checks the orientation of the screen
-        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            Toast.makeText(this, "landscape", Toast.LENGTH_SHORT).show();
-        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
-            Toast.makeText(this, "portrait", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-
-
-
-            int currentOrientation = getResources().getConfiguration().orientation;
-        // Checks the orientation of the screen
-        if (currentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
-            Toast.makeText(this, "landscape", Toast.LENGTH_SHORT).show();
-        } else if (currentOrientation == Configuration.ORIENTATION_PORTRAIT){
-            Toast.makeText(this, "portrait", Toast.LENGTH_SHORT).show();
-        }
-*/
 
 }

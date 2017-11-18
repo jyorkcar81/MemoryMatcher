@@ -1,29 +1,18 @@
 package com.example.amd.memorymatcher.fragments;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.ContentValues;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.SharedPreferences;
-import android.content.res.AssetFileDescriptor;
-import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.ColorFilter;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
-import android.media.Image;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
 import android.net.Uri;
@@ -32,34 +21,24 @@ import android.os.Bundle;
 import android.app.Fragment;
 import android.os.Handler;
 import android.os.SystemClock;
-import android.support.annotation.IntRange;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.GridLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Locale;
+import java.util.Random;
+import java.lang.reflect.Field;
 
 import com.example.amd.memorymatcher.R;
 import com.example.amd.memorymatcher.other.Board;
 import com.example.amd.memorymatcher.other.Card;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Locale;
-import java.util.Random;
-import java.lang.reflect.Field;
-import android.view.ViewGroup.LayoutParams;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -70,18 +49,11 @@ import android.view.ViewGroup.LayoutParams;
  * create an instance of this fragment.
  */
 public class GameFragment extends Fragment implements View.OnClickListener{
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     private static final int NUMBER_OF_CARD_BACKS   = 5;
     private static final int NUMBER_OF_BACKGROUNDS  = 9;
 
+    /* Games are played in different ways:  Matching 2 at a time, and Match 3 */
     public static final int MATCH_TYPE_2 = 2;
     public static final int MATCH_TYPE_3 = 3;
 
@@ -94,7 +66,31 @@ public class GameFragment extends Fragment implements View.OnClickListener{
     /* Max simultaneous sounds to play */
     private static final int MAX_STREAMS    = 10;
 
-    private int matchType;//Match 2 or Match 3 at a time.
+    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    private static final String ARG_PARAM1 = "param1";
+    private static final String ARG_PARAM2 = "param2";
+
+    private static final String GAME_OVER_DIALOG_TAG    =   "gameoverdialog";
+    private static final String GO_DIALOG_TAG           =   "godialog";
+
+    private static final String RETAINED_FRAGMENT_TAG = "data";//Tag to retrieve the retained fragment that contains data for retaining game-state.
+
+    private String mParam1;
+    private String mParam2;
+
+    private int matchType,      //Match 2 or Match 3 at a time.
+                cardBack,       //ID of cardBack image to use.
+                gridSize,       //Number of cells in the grid.
+                boardRows,      //Number of rows in the boardgame.
+                boardColumns,   //Number of columns in the boardgame.
+                background,     //Randomly chosen background.
+                matchCount,     //Total matches made.
+                totalMatchesAvailable,
+                soundTap1,      //Assigned sound ID of loaded sound for playing a SoundPool sound.
+                soundTap2,      //Assigned sound ID of loaded sound for playing a SoundPool sound.
+                soundMatch,     //Assigned sound ID of loaded sound for playing a SoundPool sound.
+                soundWin1,      //Assigned sound ID of loaded sound for playing a SoundPool sound.
+                landPortrait;   //Keeps track of orientation:  Portrait or Landscape.
 
     private Board board;
     private ArrayList<Card> cards;
@@ -102,17 +98,9 @@ public class GameFragment extends Fragment implements View.OnClickListener{
     private GameOverDialogFragment gameOverDialogFragment;
     private GoDialogFragment goDialogFragment;
 
-    private int cardBack,
-                boardSize;
-
     private GridLayout grid;
 
     private ArrayList drawableIds;
-
-    private int gridSize,       //Number of cells in the grid.
-                boardRows,      //Number of rows in the boardgame.
-                boardColumns,   //Number of columns in the boardgame.
-                background;     //Randomly chosen background.
 
     private long startTime,
                 endTime,
@@ -125,48 +113,29 @@ public class GameFragment extends Fragment implements View.OnClickListener{
                     secondCard,
                     thirdCard;
 
-
-    private int totalMatchesAvailable;
-
-    private boolean isLargeScreenDevice,
-                    isRestoredState;    //Used for determining if Fragment already exists, i.e.  user has changed orientations.
+    private boolean isLargeScreenDevice,    //Used for determining if large screen is used.  Large will be considered 7inch tablet.
+                    isRestoredState,        //Used for determining if Fragment already exists, i.e.  user has changed orientations.
+                    threadBusy,             // Aids in responsiveness of app by waiting on UI thread at times.
+                    toggleTimer;
 
     private Handler timerHandler;
 
     private static  int score;
 
-    private int matchCount;//Total matches made.
-
-    private boolean threadBusy; // Aids in responsiveness of app by waiting on UI thread at times.
-
     private TextView    tvScore,
                         tvTime,
                         tvMatchCount;
-
-    private boolean toggleTimer;
 
     private Button restartButton;
 
     private OnFragmentInteractionListener mListener;
 
-    /* Sound ID for SoundPool for playing particular sounds from RAW resource */
-    private int   soundTap1,
-                  soundTap2,
-                  soundMatch,
-                  soundMusic1,
-                  soundWin1;
-
-    private  SoundPool sp;
-
-
-    //Retain certain values to preserve game-state when orientation of device changes.
-
+    private SoundPool  sp;  //For sound bytes less than 1MB.
+    private MediaPlayer mp; //For sounds over 1MB.
 
     private ArrayList<Card> tempList;
 
-    private RetainedFragment rf;
-    private static final String RETAINED_FRAGMENT = "data";//Tag to retrieve the retained fragment that contains data for retaining game-state.
-    private int landPortrait;
+    private RetainedFragment rf; //Retain certain values to preserve game-state when orientation of device changes. Done via RetainedFragment.
 
     public GameFragment() {
         // Required empty public constructor
@@ -180,7 +149,7 @@ public class GameFragment extends Fragment implements View.OnClickListener{
      * @param param2 Parameter 2.
      * @return A new instance of fragment GameFragment.
      */
-    // TODO: Rename and change types and number of parameters
+
     public static GameFragment newInstance(String param1, String param2) {
         GameFragment fragment = new GameFragment();
         Bundle args = new Bundle();
@@ -195,11 +164,11 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         super.onCreate(savedInstanceState);
         if (getArguments() != null)
         {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-            boardRows = getArguments().getInt("boardRows");
-            boardColumns = getArguments().getInt("boardColumns");
-            matchType = getArguments().getInt("matchType");
+            mParam1         = getArguments().getString(ARG_PARAM1);
+            mParam2         = getArguments().getString(ARG_PARAM2);
+            boardRows       = getArguments().getInt("boardRows");
+            boardColumns    = getArguments().getInt("boardColumns");
+            matchType       = getArguments().getInt("matchType");
 
         }
 
@@ -223,21 +192,28 @@ public class GameFragment extends Fragment implements View.OnClickListener{
             sp = new SoundPool(MAX_STREAMS, AudioManager.STREAM_MUSIC, 0);
         }
 
-        /** soundId for Later handling of sound pool **/
         soundTap1   = sp.load(getActivity(), R.raw.c1, 1);
         soundTap2   = sp.load(getActivity(), R.raw.c2, 1);
         soundMatch  = sp.load(getActivity(), R.raw.c3, 1);
-        soundMusic1 = sp.load(getActivity(), R.raw.m1, 1);
         soundWin1   = sp.load(getActivity(), R.raw.w1, 1);
 
-        playSound(soundMusic1,LOOP_SOUND);
+        if (mp != null)
+        {
+            mp.reset();
+            mp.release();
+        }
+
+        mp = MediaPlayer.create(getActivity(), R.raw.m1);
+
+        playMediaPlayerSound(true);
 
         board = new Board(boardRows,boardColumns,matchType);
-        boardSize = board.getNumOfCards();
         gridSize = board.getNumOfCards();
+
         firstCard   = null;
         secondCard  = null;
         thirdCard   = null;
+
         threadBusy = false;
 
         score = 0;
@@ -263,14 +239,13 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         landPortrait = getResources().getConfiguration().orientation;//Initially orientation is undefined when Fragment is first created, then to Portrait/landscape.
 
         setRetainInstance(true);
-        msg("Fragment onCreate");
 
-        rf = (RetainedFragment) getFragmentManager().findFragmentByTag(RETAINED_FRAGMENT);
+        rf = (RetainedFragment) getFragmentManager().findFragmentByTag(RETAINED_FRAGMENT_TAG);
 
         if(rf == null)
         {
             rf = new RetainedFragment();
-            getFragmentManager().beginTransaction().add(rf,RETAINED_FRAGMENT).commit();
+            getFragmentManager().beginTransaction().add(rf,RETAINED_FRAGMENT_TAG).commit();
         }
 
     }
@@ -322,7 +297,7 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         Context context = inflater.getContext();
         ViewGroup.LayoutParams size = determineSize();
 
-        //Dynamically create a grid based upon boardSize*boardSize  e.g.  2x2, 4x4... always square
+        //Dynamically create a grid based upon e.g.  2x2, 4x4...
         grid.setColumnCount(boardColumns);
         grid.setRowCount(boardRows);
 
@@ -336,7 +311,6 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
             for(int i=0; i < gridSize; i++)
             {
-
                 ImageButton b = new ImageButton(context);
 
                 b.setScaleType(((ImageButton)tempGrid.getChildAt(i)).getScaleType());
@@ -384,8 +358,6 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
             cards = tempList;
 
-            board.setCards(cards);
-
             startTimer();
 
         }
@@ -393,27 +365,11 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         initListeners();
         v.setBackgroundResource(background);//Assign a random background.
 
-        //Show list of cards in log for debugging.
-/*        for(int i=0;i<tempList.size();i++)
-        {
-            Card c = tempList.get(i);
-            String s = "id_button="+c.getIdOfImageButton()+" id_pic="+c.getIdOfPic();
-            Log.d("temp cards====",s);
-        }
-*/
-
-
-        //show the cards in the log to see their order
- /*       for(int i=0;i<cards.size();i++)
-        {
-            Log.d("getIdOfPic:",""+cards.get(i).getIdOfPic());
-        }*/
-
         return v;
     }
 
     /* Determine what DP units to make each ImageButton in the GridLayout */
-    private ViewGroup.LayoutParams determineSize()
+    private ViewGroup.LayoutParams determineSize()//Adjust size of cards based on number of cards shown and screen size used.
     {
         ViewGroup.LayoutParams size = new ViewGroup.LayoutParams(0,0);
 
@@ -480,7 +436,6 @@ public class GameFragment extends Fragment implements View.OnClickListener{
                 size.width = getResources().getDimensionPixelSize(R.dimen.imageSize100);
             }
 
-            //Adjust size of cards based on number of cards shown and screen size used.
         }
         else//Small screen. e.g.  Phone.
         {
@@ -501,7 +456,6 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         return size;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
@@ -532,10 +486,12 @@ public class GameFragment extends Fragment implements View.OnClickListener{
     {
         super.onDestroy();
 
-
-        //Release all SoundPool sound resources to avoid later audio problems with running other apps.
+        //Release all sound resources to avoid later audio problems with running other sound based apps.
         sp.release();
         sp = null;
+
+        mp.release();
+        mp = null;
     }
 
     @Override
@@ -547,38 +503,32 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         landPortrait = config.orientation;
     }
 
-
-    //MediaPlayer needs to be released onStop and onPause.
     @Override
     public void onStop()
     {
-//        stopAllSounds();
-//        releaseAll();
-        msg("Fragment stopped");
         super.onStop();
     }
 
     @Override
     public void onPause()
     {
-        msg("fragment onPause");
         isRestoredState = true;
 
         rf.setData(cards);
         rf.setGridLayout(grid);
 
         sp.autoPause();
+        mp.pause();
 
-        Fragment f = getFragmentManager().findFragmentByTag("gameoverdialog");
+        Fragment f = getFragmentManager().findFragmentByTag(GAME_OVER_DIALOG_TAG);
 
         if(f != null)
         {
             DialogFragment d = (DialogFragment)f;
-            //if(f != null && f.isVisible())
-            //{
+
             d.dismiss();
             getFragmentManager().beginTransaction().remove(f).commit();
-            //}
+
         }
         super.onPause();
     }
@@ -589,6 +539,7 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         super.onResume();
 
         sp.autoResume();
+        mp.start();
 
         landPortrait = getResources().getConfiguration().orientation;
     }
@@ -604,7 +555,7 @@ public class GameFragment extends Fragment implements View.OnClickListener{
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
+
         void onFragmentInteraction(Uri uri);
     }
     //Accesses filesystem and loads into memory the full  image...may use large amounts of RAM for large pictures.
@@ -618,7 +569,7 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         }
         catch(IOException e)
         {
-            // showMessage("File not found.  "+e.toString());
+
         }
 
         return d;
@@ -656,7 +607,6 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
 
-       // BitmapFactory.decodeStream(ass.open(ASSETS_DIR+"/"+array[index]),null,options);
         BitmapFactory.decodeResource(r,resID,options);
 
         // Calculate inSampleSize
@@ -665,7 +615,7 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         // Decode bitmap with inSampleSize set
         options.inJustDecodeBounds = false;
 
-        return  BitmapFactory.decodeResource(r,resID,options);//BitmapFactory.decodeStream(ass.open(ASSETS_DIR+"/"+array[index]),null,options);
+        return  BitmapFactory.decodeResource(r,resID,options);
     }
 
     private void showGO()
@@ -674,7 +624,7 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
         FragmentTransaction ft = getFragmentManager().beginTransaction();
 
-        goDialogFragment.show(ft, "godialog");
+        goDialogFragment.show(ft, GO_DIALOG_TAG);
     }
 
 
@@ -711,10 +661,8 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
             public void run()
             {
-
                 millisecondsTime = SystemClock.uptimeMillis() - startTime;
 
-                //updateTime = TimeBuff + millisecondsTime;
                 updateTime = millisecondsTime;
 
                 secondsTime = (int) (updateTime / 1000);
@@ -771,11 +719,11 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
     private void updateStats()
     {
-        tvMatchCount.setText(""+matchCount);
-        tvScore.setText(""+score);
-        tvTime.setText(     + Long.valueOf(minutesTime).intValue() + ":"
-                            + String.format(Locale.getDefault(),"%02d", Long.valueOf(secondsTime).intValue()) + ":"
-                            + String.format(Locale.getDefault(),"%03d", Long.valueOf(millisecondsTime).intValue()));
+        tvMatchCount.setText(String.format(Locale.getDefault(),"%d", matchCount));
+        tvScore.setText(String.format(Locale.getDefault(),"%d", score));
+        tvTime.setText(         Long.valueOf(minutesTime).intValue() + ":"
+                            +   String.format(Locale.getDefault(),"%02d", Long.valueOf(secondsTime).intValue()) + ":"
+                            +   String.format(Locale.getDefault(),"%03d", Long.valueOf(millisecondsTime).intValue()));
 
     }
 
@@ -795,14 +743,12 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         catch(Exception e)
         {
             id = -9999;//Should be unreachable statement because all IDs stored are ints wrapped in a String... should be no exceptions occurring.
-            //Log.d("Exception chooseImage",e.toString());
         }
 
         drawableIds.remove(index);
 
         return id;
     }
-
 
     private void playMatch2(ImageButton imageButton)
     {
@@ -815,15 +761,13 @@ public class GameFragment extends Fragment implements View.OnClickListener{
                 {
                     firstCard = (Card)cards.get(i);
 
-                    //imageButton.setImageResource(firstCard.getIdOfPic());
-
                     Drawable d = getImage(firstCard.getIdOfPic(), imageButton.getWidth(), imageButton.getHeight());
 
                     imageButton.setImageDrawable(d);
 
                     imageButton.setEnabled(false);
 
-                    playSound(soundTap2,DONT_LOOP_SOUND);
+                    playSoundPoolSound(soundTap2,DONT_LOOP_SOUND);
 
                     return;
                 }
@@ -839,14 +783,13 @@ public class GameFragment extends Fragment implements View.OnClickListener{
                 {
                     secondCard = (Card)cards.get(i);
 
-                    //imageButton.setImageResource(secondCard.getIdOfPic());
                     Drawable d = getImage(secondCard.getIdOfPic(), imageButton.getWidth(), imageButton.getHeight());
 
                     imageButton.setImageDrawable(d);
 
                     imageButton.setEnabled(false);
 
-                    playSound(soundTap2,DONT_LOOP_SOUND);
+                    playSoundPoolSound(soundTap2,DONT_LOOP_SOUND);
 
                     break;
                 }
@@ -859,7 +802,7 @@ public class GameFragment extends Fragment implements View.OnClickListener{
             matchCount++;
             score += 100;
 
-            playSound(soundMatch,DONT_LOOP_SOUND);
+            playSoundPoolSound(soundMatch,DONT_LOOP_SOUND);
 
             //Since a match is made, disable the corresponding buttons in the GridLayout.
             grid.findViewById(firstCard.getIdOfImageButton()).setEnabled(false);
@@ -908,14 +851,13 @@ public class GameFragment extends Fragment implements View.OnClickListener{
                 {
                     firstCard = (Card)cards.get(i);
 
-                    //imageButton.setImageResource(firstCard.getIdOfPic());
                     Drawable d = getImage(firstCard.getIdOfPic(), imageButton.getWidth(), imageButton.getHeight());
 
                     imageButton.setImageDrawable(d);
 
                     imageButton.setEnabled(false);
 
-                    playSound(soundTap2,DONT_LOOP_SOUND);
+                    playSoundPoolSound(soundTap2,DONT_LOOP_SOUND);
 
                     return;
                 }
@@ -931,14 +873,13 @@ public class GameFragment extends Fragment implements View.OnClickListener{
                 {
                     secondCard = (Card)cards.get(i);
 
-                    //imageButton.setImageResource(secondCard.getIdOfPic());
                     Drawable d = getImage(secondCard.getIdOfPic(), imageButton.getWidth(), imageButton.getHeight());
 
                     imageButton.setImageDrawable(d);
 
                     imageButton.setEnabled(false);
 
-                    playSound(soundTap2,DONT_LOOP_SOUND);
+                    playSoundPoolSound(soundTap2,DONT_LOOP_SOUND);
 
                     return;
                 }
@@ -954,14 +895,13 @@ public class GameFragment extends Fragment implements View.OnClickListener{
                 {
                     thirdCard = (Card)cards.get(i);
 
-                    //imageButton.setImageResource(thirdCard.getIdOfPic());
                     Drawable d = getImage(thirdCard.getIdOfPic(), imageButton.getWidth(), imageButton.getHeight());
 
                     imageButton.setImageDrawable(d);
 
                     imageButton.setEnabled(false);
 
-                    playSound(soundTap2,DONT_LOOP_SOUND);
+                    playSoundPoolSound(soundTap2,DONT_LOOP_SOUND);
 
                     break;
                 }
@@ -974,7 +914,7 @@ public class GameFragment extends Fragment implements View.OnClickListener{
             matchCount++;
             score += 100;
 
-            playSound(soundMatch,DONT_LOOP_SOUND);
+            playSoundPoolSound(soundMatch,DONT_LOOP_SOUND);
 
             //Since a match is made, disable the corresponding buttons in the GridLayout.
             grid.findViewById(firstCard.getIdOfImageButton()).setEnabled(false);
@@ -1045,16 +985,14 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         {
             showGameOver();
 
-            //Check if new high score is reached.  If so, add to new entry to DB, else do nothing.
-
             //Stops timer at Game Over.
             toggleTimer = false;
 
-            stopSound(soundMusic1);
+            mp.reset();//Stop the music playing when game is over.
 
-            playSound(soundWin1,DONT_LOOP_SOUND);
+            playSoundPoolSound(soundWin1,DONT_LOOP_SOUND);
 
-            showHighScores();
+            showHighScores(); //Check if new high score is reached.  If so, add to new entry to DB, else do nothing.
 
         }
 
@@ -1068,7 +1006,7 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
         gameOverDialogFragment.setCancelable(false);
 
-        gameOverDialogFragment.show(ft, "gameoverdialog");
+        gameOverDialogFragment.show(ft, GAME_OVER_DIALOG_TAG);
     }
 
     private void showHighScores()
@@ -1111,7 +1049,6 @@ public class GameFragment extends Fragment implements View.OnClickListener{
          return matchCount == totalMatchesAvailable;
     }
 
-
     public ArrayList getAllDrawableId()
     {
         Field[] ids = com.example.amd.memorymatcher.R.drawable.class.getDeclaredFields();
@@ -1120,8 +1057,6 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
         int tempId;
         String tempName;
-
-        Log.d("fields_length",ids.length+"");
 
         for(int i = 0; i < ids.length; i++)
         {
@@ -1153,7 +1088,7 @@ public class GameFragment extends Fragment implements View.OnClickListener{
                 else
                 {
                     list.add(tempId);
-                    Log.d("field_name",tempName);
+
                 }
 
 
@@ -1162,7 +1097,7 @@ public class GameFragment extends Fragment implements View.OnClickListener{
             {
 
             }
-            Log.d("list_length",list.size()+"");
+
         }
 
         return list;
@@ -1275,16 +1210,13 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         }
     }
 
-    private void initGame(){}
-
-
     //If both cards are assigned the same R.drawable.imageblahblahblah then they are considered the same.  i.e.  a match has been made.
     private boolean isMatch(Card c1, Card c2)
     {
         return c1.getIdOfPic() == c2.getIdOfPic();
     }
 
-    private void playSound(final int soundId, final int loop)//int: loop mode (0 = no loop, -1 = loop forever)
+    private void playSoundPoolSound(final int soundId, final int loop)//int: loop mode (0 = no loop, -1 = loop forever)
     {
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable()
@@ -1293,8 +1225,6 @@ public class GameFragment extends Fragment implements View.OnClickListener{
             public void run()
             {
 
-                //final int soundId = sp.load(getActivity(), resource, 1);
-
                 sp.play(soundId, 1, 1, 0, loop, 1);
 
             }
@@ -1302,6 +1232,24 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
     }
 
+    private void playMediaPlayerSound(final boolean loop)
+    {
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable()
+        {
+
+            public void run()
+            {
+
+                mp.setLooping(loop);
+                mp.start();
+
+            }
+        },0);
+
+    }
+
+    //Stops SoundPool sound.
     private void stopSound(int streamID)
     {
        sp.stop(streamID);
@@ -1309,15 +1257,15 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
     private void stopAllSounds()
     {
+        //All MediaPlayer
+        mp.stop();
+
+        //All SoundPool
         stopSound(soundTap1);
         stopSound(soundTap2);
         stopSound(soundMatch);
-        stopSound(soundMusic1);
         stopSound(soundWin1);
     }
-
-
-    private void msg(String m){Toast.makeText(getActivity(),m,Toast.LENGTH_SHORT).show();}
 
     public static class GameOverDialogFragment extends DialogFragment
     {
@@ -1332,7 +1280,7 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
             final TextView text = (TextView)v.findViewById(R.id.textViewScore);
 
-            text.setText(Integer.toString(score));
+            text.setText(String.format(Locale.getDefault(),"%d", score));
 
             // Inflate and set the layout for the dialog
             // Pass null as the parent view because its going in the dialog layout
@@ -1367,8 +1315,9 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         {
             ViewGroup.LayoutParams params = getDialog().getWindow().getAttributes();
 
-            params.width    = 100;//LayoutParams.WRAP_CONTENT;
-            params.height   = 75;//LayoutParams.WRAP_CONTENT;
+            /* These values are in Pixels.  It's just enough to fit the message */
+            params.width    = 100;
+            params.height   = 75;
 
             getDialog().getWindow().setAttributes((android.view.WindowManager.LayoutParams) params);
 

@@ -13,7 +13,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,9 +21,17 @@ import android.widget.EditText;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.Toast;
-import android.app.AlertDialog.Builder;
+
 import com.example.amd.memorymatcher.R;
+
+/*  ************************************************************************************************
+    * COPYRIGHT NOTICE * COPYRIGHT NOTICE * COPYRIGHT NOTICE * COPYRIGHT NOTICE * COPYRIGHT NOTICE *
+ *  ************************************************************************************************
+ *
+ *  Copyright 2017 by Jed York.  Copyrighted material cannot be used without express written consent.
+ *  Unlawful reproduction of material forfeits all earned moneys.  If lawsuit is sought for forfeiture of damages,
+ *  damages will be doubled and any and all of your rights are waived.
+ */
 
 /**
  * A simple {@link Fragment} subclass.
@@ -35,20 +42,10 @@ import com.example.amd.memorymatcher.R;
  * create an instance of this fragment.
  */
 public class HighScoresFragment extends Fragment implements View.OnClickListener{
-    // TODO: Rename parameter arguments, choose names that match
+
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    private String score;
-    private String name;
-    private String rank;
-
-    private static int possibleHighScore;//After a game is completed the score is comapred to the entries in the DB.  It's then deteremined a high score or not.
 
     // Database Version
     private static final int DATABASE_VERSION = 1;
@@ -66,6 +63,12 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
 
     private static int MAX_USERNAME_LENGTH = 15;//Max_length for userprovided name for recording new high scores.
 
+    private static final int ROWS_IN_TABLE_LAYOUT = 5;//Total number of records (high scores) that will be shown on the screen.
+
+    private static final String USERNAME_DIALOG_TAG = "usernamedialog";
+
+    private static int possibleHighScore;//After a game is completed the score is comapred to the entries in the DB.  It's then determined a high score or not.
+
     private static SQLiteDatabase db;
     private static Helper dbHelper;
     private static Cursor cursor;
@@ -76,10 +79,10 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
 
     private static String username;
 
-    //private TableLayout table;
-    private static final int ROWS_IN_TABLE_LAYOUT = 5;//Total number of records (high scores) that will be shown on the screen.
-
     private OnFragmentInteractionListener mListener;
+
+    private String mParam1;
+    private String mParam2;
 
     public HighScoresFragment() {
         // Required empty public constructor
@@ -92,7 +95,7 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
      * @param score Parameter 1.
      * @return A new instance of fragment HighScoresFragment.
      */
-    // TODO: Rename and change types and number of parameters
+
     public static HighScoresFragment newInstance(int score) {
         HighScoresFragment fragment = new HighScoresFragment();
         Bundle args = new Bundle();
@@ -104,23 +107,16 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            possibleHighScore=getArguments().getInt(ARG_PARAM1);
-            Log.d("highscore",possibleHighScore+"");
-            //mParam1 = getArguments().getString(ARG_PARAM1);
-           // mParam2 = getArguments().getString(ARG_PARAM2);
+        if (getArguments() != null)
+        {
+            possibleHighScore = getArguments().getInt(ARG_PARAM1);
 
         }
-
 
         //FOR TESTING ONLY.  DELETE DB IF ALREADY EXISTS.
         //getActivity().deleteDatabase(DATABASE_NAME);
 
         dbHelper = new Helper(getActivity(),DATABASE_NAME,null,DATABASE_VERSION);
-        Log.d("getApplicationContext",""+getActivity());
-
-
-
 
     }
 
@@ -145,7 +141,7 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
 
             dialog.setCancelable(false);
 
-            dialog.show(ft, "usernamedialog");
+            dialog.show(ft, USERNAME_DIALOG_TAG);
 
             v.invalidate();
         }
@@ -153,7 +149,7 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
         return v;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
+
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
@@ -190,11 +186,9 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
+
         void onFragmentInteraction(Uri uri);
     }
-
-
 
     //Query the DB for the list of high scores, then display them.
     private static void updateTableLayout()
@@ -208,8 +202,6 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
                 score;
 
         db = dbHelper.getReadableDatabase();
-
-        Log.d("db",db.toString());
 
         //Query the DB for the list of high scores, then display them.  From High Score to Lowest Score.
         cursor = db.rawQuery("SELECT * FROM "+TABLE_NAME+" ORDER BY "+SCORE_COLUMN_NAME+" DESC LIMIT "+ROWS_IN_TABLE_LAYOUT,null);
@@ -240,8 +232,6 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
             ((TextView)row.getChildAt(1)).setText(name);
             ((TextView)row.getChildAt(2)).setText(score);
 
-            Log.d("db_entry_name",name);
-
             rank = Integer.valueOf(Integer.parseInt(rank) + 1).toString();
 
             i++;
@@ -260,7 +250,6 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
         updateTableLayout();
     }
 
-
     public boolean isNewHighScore()//Determine if the new score is a high score.
     {
         String score="";
@@ -271,7 +260,7 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
         //Query the DB for the list of high scores looking to see if the new score is a high score.
         cursor = db.rawQuery("SELECT * FROM "+TABLE_NAME+" ORDER BY "+SCORE_COLUMN_NAME+" DESC LIMIT "+ROWS_IN_TABLE_LAYOUT,null);
 
-         count = cursor.getCount();//Will be 5 or less because of LIMIT.
+        count = cursor.getCount();//Will be 5 or less because of LIMIT.
 
         if(count == ROWS_IN_TABLE_LAYOUT)
         {
@@ -299,7 +288,7 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
             }
 
         }
-        else /* Technically, unreachable because LIMIT will never return a value greater than count=5 ROWS_IN_TABLE_LAYOUT */
+        else /* Technically, unreachable because LIMIT will never return a value greater than count=ROWS_IN_TABLE_LAYOUT */
         {
             return false;
         }
@@ -386,7 +375,6 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
 
     }
 
-
     public static class UsernameDialogFragment extends DialogFragment
     {
         @Override
@@ -418,8 +406,6 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
                                 username = username.substring(0,MAX_USERNAME_LENGTH);
                             }
 
-                            Log.d("user",username);
-
                             //Limit the name to a certain length.
 
                             //username must be at least 1 character... i.e.  The user must have entered a name then pressed OK.
@@ -431,22 +417,17 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
                                 cv.put(NAME_COLUMN_NAME,username);
                                 cv.put(SCORE_COLUMN_NAME,possibleHighScore);
 
-                                Log.d("possibleHigh",possibleHighScore+"");
-                                Log.d("uname",username);
-
                                 //Database may need to be opened and writable to make the insert.
 
                                 db = dbHelper.getWritableDatabase();
 
-
-/************/
                                 String score="";
                                 int count;
 
                                 //Query the DB for the list of high scores looking to see if the new score is a high score.
                                 cursor = db.rawQuery("SELECT * FROM "+TABLE_NAME+" ORDER BY "+SCORE_COLUMN_NAME+" DESC LIMIT "+ROWS_IN_TABLE_LAYOUT,null);
 
-                                count = cursor.getCount();//Will be 5 or less because of LIMIT.
+                                count = cursor.getCount();//Will be ROWS_IN_TABLE_LAYOUT or less because of LIMIT.
 
                                 if(count == ROWS_IN_TABLE_LAYOUT)
                                 {
@@ -477,28 +458,10 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
                                     }
 
                                 }
-                                else /* Technically, unreachable because LIMIT will never return a value greater than count=5 ROWS_IN_TABLE_LAYOUT */
+                                else /* Technically, unreachable because LIMIT will never return a value greater than count=ROWS_IN_TABLE_LAYOUT */
                                 {
                                     //Save nothing to DB.
                                 }
-
-
-
-/************/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
                                 updateTableLayout();
 
@@ -519,7 +482,5 @@ public class HighScoresFragment extends Fragment implements View.OnClickListener
             return builder.create();
         }
     }
-
-
 
 }

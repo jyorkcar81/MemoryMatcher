@@ -8,8 +8,6 @@
     <string name="developedBy">Developed By Jed York</string>
     <string name="emailAddress" translatable="false">jyorkcar@sbcglobal.net</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-
     <!-- Titles of fragments and activities -->
     <string name="two_by_two_title">Match 2</string>
     <string name="three_by_three_title">Match 3</string>
@@ -25,7 +23,6 @@
     <string name="tutorial_titlematch3">Title Match 3.</string>
     <string name="tutorial_titledescription">After game size is selected title shows.</string>
 
-
     <!-- Navigation Drawer Labels -->
     <string name="nav_twotwo">2x2</string>
     <string name="nav_threethree">3x3</string>
@@ -40,12 +37,10 @@
     <!-- Info for About -->
     <string name="about_info">This app was created with Android Studio.</string>
 
-
     <!-- stat panel at the bottom of the board & Score is used on GameOver Dialog -->
     <string name="match_count">Match Count:</string>
     <string name="score">Score:</string>
     <string name="timer">Time:</string>
-
 
     <!-- various button labels -->
     <string name="restart_button">Restart</string>
@@ -75,7 +70,4 @@
     <!-- GO! message -->
     <string name="go_label">GO!</string>
     <string name="play_button">Play</string>
-
-
-
 </resources>

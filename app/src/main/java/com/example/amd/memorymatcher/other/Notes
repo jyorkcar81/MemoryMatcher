@@ -1,0 +1,63 @@
+------------------------------------------------
+Notes
+------------------------------------------------
+
+MemoryMatcher, this App, is a game based on Memory, an old card game where cards are placed upside-down on a table.
+Cards are then flipped over and matched in pairs.  The game ends when all matches are made, i.e.  no card is upside-down.
+
+------------------------------------------------
+Features
+------------------------------------------------
+    +  Supports orientations portrait and landscape.  Retains game-state upon orientation change.
+    +  Supports API 19 and up.
+    +  Supports 4 inch phones and 7 inch tablets.
+    +  Includes a short tutorial for users to learn the game and the app.
+    +  Includes sounds.
+    +  Includes nearly 100 images.
+    +  All games are randomly created.  All cardbacks are randomly selected and the paired images are random.
+    +  Supports English & Spanish.
+    +  High Scores are stored in a local database which retains a short list of entries.
+    +  Slide-in menu.
+    +  Restart button restarts game at any time.  This simply resets the timer, score, match count, re-shuffles the images, and flips them to show cardbacks.
+        (Note that the music is never restarted, it simply keeps looping)
+
+------------------------------------------------
+Code
+------------------------------------------------
+    Two ArrayLists work together to build and manage the UI.  One made of cards, and the other, ImageButtons.
+    Another ArrayList gets a list of all the resource image files, excluding a small list (see actual source code),
+    which are randomly assigned to make a game.  The GameFragment acts as the game engine, where the game is run.
+    After completing the game, HighScoresFragment stores scores in a SQLlite database.
+
+
+------------------------------------------------
+Re-skin
+------------------------------------------------
+    To easily reskin the app, you will need to:
+
+    +  Replace and or add image resource files in drawable folder.  Additional image files requires no Java code modifications assuming certain file names are avoided.
+        See GameFragment.getAllDrawableId() to see naming conventions used that MUST be avoided.
+
+    +  Replace cardback images with files using naming convention 'cardbackXXXX...jpg' where X is any number.  e.g.  cardback1.jpg
+
+    +  Replace background images using naming convention 'bgXXXXX...jpg'
+
+    +  Replace sound resource files in raw folder.
+        See raw folder for file names that MUST be used.
+
+    +  Replace the app icon.  Name is 'myicon.png'
+
+    +  To re-name the app, go into the strings.xml file and change name here:
+        <string name="app_name" translatable="false">MemoryMatcher</string>
+
+    +  Also to note is you can change various customized colors in /values/colors.xml.
+
+    +  To change background image on the Slide-in menu, go to /layout/nav_header_main.xml to change:
+        android:background="@drawable/bg3" of the containing LinearLayout.
+
+    +  To change the background used on the app, but not the board games, change various layout backgrounds including
+                /layout/content_main.xml
+                /layout/fragment_about.xml
+                /layout/fragment_high_scores.xml
+
+    +  Rebuild project, duh.
