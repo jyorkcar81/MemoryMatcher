@@ -172,36 +172,17 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
         }
 
-        /* Note that "new SoundPool(...)" is deprecated and only works under API level 21.  21 and higher API requires using SoundPool.Builder. */
+        initSoundPool();
 
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-        {
+        loadSoundPoolSounds();
 
-            AudioAttributes attributes = new AudioAttributes.Builder()
-                    .setUsage(AudioAttributes.USAGE_GAME)
-                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                    .build();
-
-            sp = new SoundPool.Builder()
-                    .setAudioAttributes(attributes)
-                    .setMaxStreams(MAX_STREAMS)
-                    .build();
-        }
-        else
-        {
-            sp = new SoundPool(MAX_STREAMS, AudioManager.STREAM_MUSIC, 0);
-        }
-
-        soundTap1   = sp.load(getActivity(), R.raw.c1, 1);
-        soundTap2   = sp.load(getActivity(), R.raw.c2, 1);
-        soundMatch  = sp.load(getActivity(), R.raw.c3, 1);
-        soundWin1   = sp.load(getActivity(), R.raw.w1, 1);
-
-        if (mp != null)
+       /* if (mp != null)
         {
             mp.reset();
             mp.release();
-        }
+        }*/
+
+        releaseMediaPlayer();
 
         mp = MediaPlayer.create(getActivity(), R.raw.m1);
 
@@ -487,11 +468,10 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         super.onDestroy();
 
         //Release all sound resources to avoid later audio problems with running other sound based apps.
-        sp.release();
-        sp = null;
+        releaseSoundPool();
 
-        mp.release();
-        mp = null;
+        releaseMediaPlayer();
+
     }
 
     @Override
@@ -506,6 +486,8 @@ public class GameFragment extends Fragment implements View.OnClickListener{
     @Override
     public void onStop()
     {
+        releaseSoundPool();
+        releaseMediaPlayer();
         super.onStop();
     }
 
@@ -517,15 +499,10 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         rf.setData(cards);
         rf.setGridLayout(grid);
 
-        sp.autoPause();
+        //sp.autoPause();
 
-        if(mp != null)
-        {
-            if(mp.isPlaying())
-            {
-                mp.pause();
-            }
-        }
+        releaseSoundPool();
+        releaseMediaPlayer();
 
         Fragment f = getFragmentManager().findFragmentByTag(GAME_OVER_DIALOG_TAG);
 
@@ -545,11 +522,53 @@ public class GameFragment extends Fragment implements View.OnClickListener{
     {
         super.onResume();
 
-        sp.autoResume();
-        mp.start();
+        //sp.autoResume();
+
+        releaseMediaPlayer();
+
+        mp = MediaPlayer.create(getActivity(), R.raw.m1);
+
+        playMediaPlayerSound(true);
+
+        releaseSoundPool();
+        initSoundPool();
+        loadSoundPoolSounds();
 
         landPortrait = getResources().getConfiguration().orientation;
     }
+
+    private void initSoundPool()
+    {
+       /* Note that "new SoundPool(...)" is deprecated and only works under API level 21.  21 and higher API requires using SoundPool.Builder. */
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+        {
+
+            AudioAttributes attributes = new AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_GAME)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                    .build();
+
+            sp = new SoundPool.Builder()
+                    .setAudioAttributes(attributes)
+                    .setMaxStreams(MAX_STREAMS)
+                    .build();
+        }
+        else
+        {
+            sp = new SoundPool(MAX_STREAMS, AudioManager.STREAM_MUSIC, 0);
+        }
+    }
+
+    private void loadSoundPoolSounds()
+    {
+        soundTap1   = sp.load(getActivity(), R.raw.c1, 1);
+        soundTap2   = sp.load(getActivity(), R.raw.c2, 1);
+        soundMatch  = sp.load(getActivity(), R.raw.c3, 1);
+        soundWin1   = sp.load(getActivity(), R.raw.w1, 1);
+    }
+
+
 
     /**
      * This interface must be implemented by activities that contain this
@@ -1332,6 +1351,25 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         }
     }
 
+    //Properly free memory no longer used by MediaPlayer.
+    private void releaseMediaPlayer()
+    {
+        if(mp != null)
+        {
+            mp.release();
+            mp = null;
+        }
+    }
+
+    //Properly free memory no longer used by SoundPool.
+    private void releaseSoundPool()
+    {
+        if(sp != null)
+        {
+            sp.release();
+            sp = null;
+        }
+    }
 
 }
 
