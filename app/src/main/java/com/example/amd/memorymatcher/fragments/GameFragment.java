@@ -176,12 +176,6 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
         loadSoundPoolSounds();
 
-       /* if (mp != null)
-        {
-            mp.reset();
-            mp.release();
-        }*/
-
         releaseMediaPlayer();
 
         mp = MediaPlayer.create(getActivity(), R.raw.m1);
@@ -499,8 +493,6 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         rf.setData(cards);
         rf.setGridLayout(grid);
 
-        //sp.autoPause();
-
         releaseSoundPool();
         releaseMediaPlayer();
 
@@ -522,8 +514,6 @@ public class GameFragment extends Fragment implements View.OnClickListener{
     {
         super.onResume();
 
-        //sp.autoResume();
-
         releaseMediaPlayer();
 
         mp = MediaPlayer.create(getActivity(), R.raw.m1);
@@ -533,6 +523,8 @@ public class GameFragment extends Fragment implements View.OnClickListener{
         releaseSoundPool();
         initSoundPool();
         loadSoundPoolSounds();
+
+        /* Note that any SoundPool sounds that were playing prior to being "cut-off" are not restarted, only the media player's game music is restarted. */
 
         landPortrait = getResources().getConfiguration().orientation;
     }
