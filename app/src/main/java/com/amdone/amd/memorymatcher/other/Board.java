@@ -1,7 +1,4 @@
-package com.example.amd.memorymatcher.other;
-
-import java.util.ArrayList;
-import java.util.Collections;
+package com.amdone.amd.memorymatcher.other;
 
 /*  ************************************************************************************************
     * COPYRIGHT NOTICE * COPYRIGHT NOTICE * COPYRIGHT NOTICE * COPYRIGHT NOTICE * COPYRIGHT NOTICE *

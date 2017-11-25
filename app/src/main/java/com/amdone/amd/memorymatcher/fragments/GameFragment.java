@@ -1,4 +1,4 @@
-package com.example.amd.memorymatcher.fragments;
+package com.amdone.amd.memorymatcher.fragments;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -36,9 +36,9 @@ import java.util.Locale;
 import java.util.Random;
 import java.lang.reflect.Field;
 
-import com.example.amd.memorymatcher.R;
-import com.example.amd.memorymatcher.other.Board;
-import com.example.amd.memorymatcher.other.Card;
+import com.amdone.amd.memorymatcher.R;
+import com.amdone.amd.memorymatcher.other.Board;
+import com.amdone.amd.memorymatcher.other.Card;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -211,8 +211,6 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
         isRestoredState = false;
 
-        landPortrait = getResources().getConfiguration().orientation;//Initially orientation is undefined when Fragment is first created, then to Portrait/landscape.
-
         setRetainInstance(true);
 
         rf = (RetainedFragment) getFragmentManager().findFragmentByTag(RETAINED_FRAGMENT_TAG);
@@ -269,6 +267,9 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
         */
 
+        /* Take note of orientation change as this determines DP size of ImageButtons in the GridLayout */
+        landPortrait = config.orientation;
+
         Context context = inflater.getContext();
         ViewGroup.LayoutParams size = determineSize();
 
@@ -290,7 +291,7 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
                 b.setScaleType(((ImageButton)tempGrid.getChildAt(i)).getScaleType());
 
-                b.setLayoutParams(tempGrid.getChildAt(i).getLayoutParams());
+                b.setLayoutParams(size);
 
                 b.setId(tempGrid.getChildAt(i).getId());
 
@@ -300,6 +301,7 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
                 grid.addView(b);
             }
+
 
         }
         else
@@ -468,14 +470,14 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
     }
 
-    @Override
+   /* @Override
     public void onConfigurationChanged(Configuration config)
     {
         super.onConfigurationChanged(config);
 
-        /* Take note of orientation change as this determines DP size of ImageButtons in the GridLayout */
+        //Take note of orientation change as this determines DP size of ImageButtons in the GridLayout
         landPortrait = config.orientation;
-    }
+    }*/
 
     @Override
     public void onStop()
@@ -1069,7 +1071,7 @@ public class GameFragment extends Fragment implements View.OnClickListener{
 
     public ArrayList getAllDrawableId()
     {
-        Field[] ids = com.example.amd.memorymatcher.R.drawable.class.getDeclaredFields();
+        Field[] ids = com.amdone.amd.memorymatcher.R.drawable.class.getDeclaredFields();
 
         ArrayList list = new ArrayList();
 

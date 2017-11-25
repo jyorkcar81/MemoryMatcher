@@ -1,4 +1,4 @@
-package com.example.amd.memorymatcher;
+package com.amdone.amd.memorymatcher;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

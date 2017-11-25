@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:background="@color/myWhite"
     android:visibility="visible"
-    tools:context="com.example.amd.memorymatcher.fragments.TutorialFragment"
+    tools:context="com.amdone.amd.memorymatcher.fragments.TutorialFragment"
     tools:layout_editor_absoluteX="8dp"
     tools:layout_editor_absoluteY="8dp">
 

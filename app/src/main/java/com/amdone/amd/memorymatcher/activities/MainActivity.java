@@ -1,4 +1,4 @@
-package com.example.amd.memorymatcher.activities;
+package com.amdone.amd.memorymatcher.activities;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -15,11 +15,11 @@ import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.widget.Button;
 
-import com.example.amd.memorymatcher.R;
-import com.example.amd.memorymatcher.fragments.AboutFragment;
-import com.example.amd.memorymatcher.fragments.GameFragment;
-import com.example.amd.memorymatcher.fragments.HighScoresFragment;
-import com.example.amd.memorymatcher.fragments.TutorialFragment;
+import com.amdone.amd.memorymatcher.R;
+import com.amdone.amd.memorymatcher.fragments.TutorialFragment;
+import com.amdone.amd.memorymatcher.fragments.AboutFragment;
+import com.amdone.amd.memorymatcher.fragments.GameFragment;
+import com.amdone.amd.memorymatcher.fragments.HighScoresFragment;
 
 /*  ************************************************************************************************
     * COPYRIGHT NOTICE * COPYRIGHT NOTICE * COPYRIGHT NOTICE * COPYRIGHT NOTICE * COPYRIGHT NOTICE *

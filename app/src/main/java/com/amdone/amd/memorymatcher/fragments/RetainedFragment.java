@@ -1,4 +1,4 @@
-package com.example.amd.memorymatcher.fragments;
+package com.amdone.amd.memorymatcher.fragments;
 
 import android.app.Fragment;
 import android.os.Bundle;
@@ -6,7 +6,7 @@ import android.widget.GridLayout;
 
 import java.util.ArrayList;
 
-import com.example.amd.memorymatcher.other.Card;
+import com.amdone.amd.memorymatcher.other.Card;
 
 /*  ************************************************************************************************
     * COPYRIGHT NOTICE * COPYRIGHT NOTICE * COPYRIGHT NOTICE * COPYRIGHT NOTICE * COPYRIGHT NOTICE *

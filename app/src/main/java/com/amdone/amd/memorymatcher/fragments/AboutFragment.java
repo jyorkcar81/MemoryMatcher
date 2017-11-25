@@ -1,4 +1,4 @@
-package com.example.amd.memorymatcher.fragments;
+package com.amdone.amd.memorymatcher.fragments;
 
 import android.content.Context;
 import android.net.Uri;
@@ -8,7 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.amd.memorymatcher.R;
+import com.amdone.amd.memorymatcher.R;
 
 /*  ************************************************************************************************
     * COPYRIGHT NOTICE * COPYRIGHT NOTICE * COPYRIGHT NOTICE * COPYRIGHT NOTICE * COPYRIGHT NOTICE *
@@ -22,23 +22,24 @@ import com.example.amd.memorymatcher.R;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link TutorialFragment.OnFragmentInteractionListener} interface
+ * {@link AboutFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link TutorialFragment#newInstance} factory method to
+ * Use the {@link AboutFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class TutorialFragment extends Fragment {
+public class AboutFragment extends Fragment {
 
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+
 
     private String mParam1;
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
 
-    public TutorialFragment() {
+    public AboutFragment() {
         // Required empty public constructor
     }
 
@@ -48,11 +49,11 @@ public class TutorialFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment TutorialFragment.
+     * @return A new instance of fragment AboutFragment.
      */
 
-    public static TutorialFragment newInstance(String param1, String param2) {
-        TutorialFragment fragment = new TutorialFragment();
+    public static AboutFragment newInstance(String param1, String param2) {
+        AboutFragment fragment = new AboutFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -72,11 +73,8 @@ public class TutorialFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.fragment_tutorial, container, false);
-
-        return v;
+        return inflater.inflate(R.layout.fragment_about, container, false);
     }
 
 
@@ -117,5 +115,4 @@ public class TutorialFragment extends Fragment {
 
         void onFragmentInteraction(Uri uri);
     }
-
 }

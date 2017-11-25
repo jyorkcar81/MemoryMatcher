@@ -1,4 +1,4 @@
-package com.example.amd.memorymatcher.other;
+package com.amdone.amd.memorymatcher.other;
 
 /*  ************************************************************************************************
     * COPYRIGHT NOTICE * COPYRIGHT NOTICE * COPYRIGHT NOTICE * COPYRIGHT NOTICE * COPYRIGHT NOTICE *

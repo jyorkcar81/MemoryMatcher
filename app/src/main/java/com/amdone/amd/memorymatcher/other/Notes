@@ -8,19 +8,33 @@ Cards are then flipped over and matched in pairs.  The game ends when all matche
 ------------------------------------------------
 Features
 ------------------------------------------------
-    +  Supports orientations portrait and landscape.  Retains game-state upon orientation change.
-    +  Supports API 19 and up.
-    +  Supports 4 inch phones and 7 inch tablets.
-    +  Includes a short tutorial for users to learn the game and the app.
-    +  Includes sounds.
-    +  Includes nearly 100 images.
-    +  All games are randomly created.  All cardbacks are randomly selected and the paired images are random.
-    +  Supports English & Spanish.
-    +  High Scores are stored in a local database which retains a short list of entries.
-    +  Slide-in menu.
-    +  Restart button restarts game at any time.  This simply resets the timer, score, match count, re-shuffles the images, and flips them to show cardbacks.
-        (Note that the music is never restarted, it simply keeps looping)
+        +  Supports orientations portrait and landscape.  Retains game-state upon orientation change.
+        +  Supports API 19 and up.
+        +  Supports 4 inch phones and 7 inch tablets.
+        +  Includes a short tutorial for users to learn the game and the app.
+        +  Includes sounds.
+        +  Includes nearly 100 images.
+        +  All games are randomly created.  All cardbacks are randomly selected and the paired images are random.
+        +  Random background images.
+        +  Supports English & Spanish.
+        +  High Scores are stored in a local database which retains a short list of entries.
+        +  Slide-in menu.
+        +  Restart button restarts game at any time.  This simply resets the timer, score, match count, re-shuffles the images, and flips them to show cardbacks.
+            (Note that the music is never restarted, it simply keeps looping)
 
+        Phones support:
+        -------------------
+        2x2
+        3x3
+        4x4
+
+        Tablets support:
+        ------------------
+        2x2
+        3x3
+        4x4
+        4x5
+        6x6
 ------------------------------------------------
 Code
 ------------------------------------------------

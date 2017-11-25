@@ -1,4 +1,4 @@
-package com.example.amd.memorymatcher.fragments;
+package com.amdone.amd.memorymatcher.fragments;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -22,7 +22,7 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-import com.example.amd.memorymatcher.R;
+import com.amdone.amd.memorymatcher.R;
 
 /*  ************************************************************************************************
     * COPYRIGHT NOTICE * COPYRIGHT NOTICE * COPYRIGHT NOTICE * COPYRIGHT NOTICE * COPYRIGHT NOTICE *

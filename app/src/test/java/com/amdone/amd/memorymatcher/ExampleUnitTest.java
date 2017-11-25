@@ -1,4 +1,4 @@
-package com.example.amd.memorymatcher;
+package com.amdone.amd.memorymatcher;
 
 import org.junit.Test;
 
